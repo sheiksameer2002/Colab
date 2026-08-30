@@ -105,7 +105,6 @@ def _yf_call(func, label=""):
             raise
     raise last_exc
 
-
 BASE_DIR = r"C:\Users\sheik\PycharmProjects\MyProject"
 os.makedirs(BASE_DIR, exist_ok=True)
 
