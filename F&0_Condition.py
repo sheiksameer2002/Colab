@@ -46,7 +46,7 @@ os.makedirs(LOG_DIR, exist_ok=True)
 # ------------------------------
 # FYERS API SETUP
 # ------------------------------
-date_to_check = "2026-08-28"
+date_to_check = "2026-09-1"
 
 #client_id = "EQ09VHDCAE-100"
 client_id = '6KX2O3OQK4-100'

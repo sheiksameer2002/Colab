@@ -1,10 +1,10 @@
-# DropDetails log — 2026-08-31 01:48:54
+# DropDetails log — 2026-09-02 01:33:52
 
-[N1 (Today)] No UpWick Stocks (2):
-BANKINDIA, JSWENERGY
+[N1 (Today)] No UpWick Stocks (10):
+AXISBANK, BEL, GAIL, GRASIM, IDFCFIRSTB, INOXWIND, IRFC, LT, TATASTEEL, WAAREEENER
 
-[N2 (Prev Day)] No UpWick Stocks (0):
-(none)
+[N2 (Prev Day)] No UpWick Stocks (19):
+AMBUJACEM, BEL, BRITANNIA, CDSL, GAIL, GRASIM, HINDZINC, INDIGO, INOXWIND, JUBLFOOD, NMDC, POWERGRID, RELIANCE, TITAN, TRENT, TVSMOTOR, UNIONBANK, VEDL, WAAREEENER
 
 [N3 (2 Days Back)] No UpWick Stocks (0):
 (none)
