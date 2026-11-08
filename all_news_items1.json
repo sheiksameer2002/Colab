@@ -1,76 +1,48 @@
 {
-  "ALEMBICLTD": {
-    "fetched_at_ist": "29 Sep 2026 22:00:05 IST",
-    "total_items": 179,
+  "ARIHANTCAP": {
+    "fetched_at_ist": "03 Nov 2026 19:35:24 IST",
+    "total_items": 100,
     "items": [
       {
-        "headline": "Alembic Ground, Vadodara details, matches, stats - Cricbuzz",
-        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPUXlkengwZ3FkZDZjeERyUC10SDBSVnZSaTBZbkRuYXB0NUZBVFFlTjZ3OGVBRkhLOUQzcjhsem1CZkNJVGVlV1ZNOHNFUXpLalhwYldUV0ZJNjZSNFVnYU16LVRpdWdncDhweVpiZ3ZIMzNfWHNsaEpLM1BWaXVjVGstNFBIaFhUU3YwcWFNclZtTmxtXzY5MmxOVEoyZlU?oc=5",
-        "timestamp_ist": "28 Sep 00:11",
-        "provider": "Cricbuzz",
-        "source_tag": "google_news"
-      },
-      {
-        "headline": "Alembic Pharmaceuticals secures 45% stake in Canadian joint venture - scanx.trade",
-        "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxPUXlwQ1ByWTZhdFBINFlxNmJwMWNJdTRkdmhIZmhCTm1pWmFsanUtSzYwUGhuSzF0T1pJYVptWXhQYlNyVVlQWktjOElLXzR5LUZZNFl4eXpXQzlEMzViS1hYVm1TanVpeTNKYWNERFdWT1JhY1VsUXN5akFQU2NPcTd3aFF0ZXFQSE50MkVSb0ZpZmhQN1NtZkx0Z3A2Wjd6QVBnaHVqVHNxYW1UNkl6VEFCNU5oTktiZS1BN2ZOOGw?oc=5",
-        "timestamp_ist": "26 Sep 06:48",
-        "provider": "scanx.trade",
-        "source_tag": "google_news"
-      },
-      {
-        "headline": "Alembic Ltd Directors Report",
-        "url": "http://www.bing.com/news/apiclick.aspx?ref=FexRss&aid=&tid=6abbe78a613246fb900f10698365313d&url=https%3a%2f%2fwww.indiainfoline.com%2fcompany%2falembic-ltd%2freports%2fdirectors-report&c=12592878514465923404&mkt=en-in",
-        "timestamp_ist": "25 Sep 14:28",
-        "provider": "Bing News",
-        "source_tag": "bing_news"
-      },
-      {
-        "headline": "Alembic Pharmaceuticals vs Lupin vs FDC Limited: Comparison - Univest",
-        "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9RMXdlTnJqaHluOHRsZEZSd1FyVFVVREhfS0d0NHkyOWJ4U2dZcVNlbXJnUFp0Ym5OdGEwOS1mZmJLRzd0N0p6OWVTenVFZ0JhTWxnZXAtSE5iVG9qZVZzMHZsQkxIcHlrZjlobHM3WV8?oc=5",
-        "timestamp_ist": "25 Sep 09:54",
-        "provider": "Univest",
-        "source_tag": "google_news"
-      },
-      {
-        "headline": "Alembic Pharmaceuticals Share Price",
-        "url": "http://www.bing.com/news/apiclick.aspx?ref=FexRss&aid=&tid=6abbe78a613246fb900f10698365313d&url=https%3a%2f%2fwww.business-standard.com%2fmarkets%2falembic-pharmaceuticals-ltd-share-price-40294.html&c=4175371913414255308&mkt=en-in",
-        "timestamp_ist": "24 Sep 22:30",
-        "provider": "Bing News",
-        "source_tag": "bing_news"
-      },
-      {
-        "headline": "Alembic Share Price",
-        "url": "http://www.bing.com/news/apiclick.aspx?ref=FexRss&aid=&tid=6abbe78b2b1e47bba78452b822879410&url=https%3a%2f%2fwww.business-standard.com%2fmarkets%2falembic-ltd-share-price-632.html&c=15268637577263919091&mkt=en-in",
-        "timestamp_ist": "24 Sep 22:30",
-        "provider": "Bing News",
-        "source_tag": "bing_news"
-      },
-      {
-        "headline": "Alembic Pharmaceuticals Stock Signals to Watch This Week - Univest",
-        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPTFp2RUhoRWo1UzJVQ3dDQU5zb2tuOXpRZS1fT2VabVhQQ0hKaURMQVI1OElvLWJwMHA5LS1ORmx0d0RHT1VoYW9vWk9weVRiS3Jqam1kMURiZGNjaEp6bmc2T1RFcW5BTWxMLS1laHkyRlI4akRQb0dpd3QweUFvYk91c1hEUC1pWlJ5bmxB?oc=5",
-        "timestamp_ist": "23 Sep 11:35",
-        "provider": "Univest",
-        "source_tag": "google_news"
-      },
-      {
-        "headline": "Buy, Sell Or Hold: Ather Energy, MCX, Alembic Pharmaceuticals, Power Mech, CESC, Nykaa — Ask Profit - NDTV Profit",
-        "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxOSmYtenY5ZEZBdnUzYUhWbHA4TlZoSE5OQTNzSWhURGxCaU5tUUFFYnkyQVJpbWlGMnJFLTBKWkY1dTZ6d0U4ZFowNGdCTldJdVBGYXY1QnVfd0RQZUxJbGZ1eWxoYnBocHZpR3lnalFIYU1TVE5WYl9STERxdkx6WUlGdTExWkttc1c0MzRWNWRRbkJUclFuNTJUWnUxaTM3SFA2bVdXWUkwSkh6TzJYWWpZZU5FT0FQSXlyeS1LemxxSHpjYTBNQXJEYjdTdUHSAdcBQVVfeXFMTVh3dGRQSFNvQWVlY2dRUGV2TVRDaVdHU180LU5uWjhrakxwSWhfNmFLY2VFOWVSMU5acWhnYVZuRkdhMFI2ZXRFSE1KTHNIanBvS1dBWlBFY25SdVhGbVE2cmtRWEdFTHN6NnU0Qjc0SDJMWUIzNjAtR3pDMWIzUEl5QzdyZURteWJ6MjZpMWVGRk5yWXZrYk9NS18za01ndnJ4RWxjN1hzV2ZPNHRYMklMMkg0LU1Ob2liVXk3NnVRRGJCLWtzSER6bEg2UktKWnoxTFh3UVk?oc=5",
-        "timestamp_ist": "22 Sep 05:46",
-        "provider": "NDTV Profit",
-        "source_tag": "google_news"
-      },
-      {
-        "headline": "Alembic Ltd is Rated Hold by MarketsMOJO - MarketsMojo",
-        "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPUUc2ZDl1YjBkcURVc19qMkRocXp3QjllcEctaUZWa3RneXlSTmdueEZaVFZwRUJqXzlBNTVXUEpKTU9WMUpFMllEbXRNeWhMMkpFQ0RjZEZxcjlyOVZYYzFpcWhERkJxcEl5RUo1NURGT3U4dkN1ZU1qOFlQb01oYWxFOHNHcHg1MW9BNHpQM2Z5ZTVaZ2l3QmR4NWU1UG9mQldITQ?oc=5",
-        "timestamp_ist": "21 Sep 20:41",
+        "headline": "Arihant Capital Markets Downgraded to Hold by MarketsMOJO Amid Mixed Technical and Financial Signals - MarketsMojo",
+        "url": "https://news.google.com/rss/articles/CBMi9AFBVV95cUxPTEtWcUVQRmRpVkZUajAzVHYzM2VGYWwyejhRNlNtakloLW9Na2ZYb3c3RDRheHBMOTZHeWMxYzduQTNYUnl2Qk9WdC1QaTYyYkc0b3hsUDBQa3BtcUtNZG1neS0yYUhyVXhvWU1vMFROY2FQSlA4OEhSR1lXRUVsR3NVR3c2THlqcjJLS1pZTlAydk9rM2MyTlF3azF5TjcwWlBSQU9nQ0tyZkFUUHk1alFMV3lJaTAwRExLdWVEa0tBbWFYRWttSFpfWG9DV290OHJORkRIU19XbWNETDFOZmxxVGxhdWhiRDk2LTlwTkw0SXM2?oc=5",
+        "timestamp_ist": "03 Nov 12:51",
         "provider": "MarketsMojo",
         "source_tag": "google_news"
       },
       {
-        "headline": "Trade Spotlight: How should you trade UNO Minda, Tilaknagar Industries, ASK Automotive, Alembic Pharma,... - Moneycontrol.com",
-        "url": "https://news.google.com/rss/articles/CBMirAJBVV95cUxOYUtuTE8wbHVUc2FELXFqM3FFOC1NeklpTDh1N3QydDc2d0lKc2g0VlJMVzZSRTMwVzVzQmUxMUdidWN5UlVmTVlfeGtPNHBGeDNzOTFqTE1JcFdVVUtxTUVnUnZGbWFUeThNd0JrR19VclJqSWZwNE90UkFxVEd5S0t1ZEdmQWFWVGZjcGRUNDQ5Tk9JLWRQaFIyUWJtc3BITzNwWnA0eTBkUGxPSVVUbUh5Zi04QkFGWFV0azNuSkJVcFRTQVRBXzk5NDl5S1NVRDFrT1NCY1d5ZmpONU41MVE4bjhUWUQ4MnNDRG54RHo4dE5vR1p2MU9obC1JWTN4ZG9tWHM5d1VhVWVJYTBJdWMzdkU2eGRWRzhRYlNCSGVMYlVYWm5JbVlxY0nSAbICQVVfeXFMT0UtdDBMeUs0Y21nMURfLU8wM1RPNU9raFFSVkpFZ1hpeENDR3JxOUhVbUdDQWYtalRvVmF2TWttc2NjR1dmZ2I0aWl0dE5aNmdaNG1wWHZlUTVnVDZjWjBMTDlqbTcyZ21oRmp4RHFzTFAtYnZKbFdvTmVISjVZbjA4ZkQyNXIwWm1GckhMcHk0aUpqYUxxbUp0XzMyS3ZJYk5NZGtpeTBXSlJXc1JMNFEyUHBLeE1sRzN6UmtLT2c2ckRkMkd6MHpiOEtMTUNQZ0NJLTk5aGd5QjVwVEZhYTdtYldrT2lWWXVGUy0xN1dQQmhkOEJSRERQWHEyaklSa2VhNl9KT1Q5R3Rzb0xDVFYyeFM2d0hVVlRoVkloSndnN1pNZkY3S1RrMXhIcmo4V0d3?oc=5",
-        "timestamp_ist": "21 Sep 12:30",
-        "provider": "Moneycontrol.com",
+        "headline": "Arihant Capital Markets Sees Technical Momentum Shift Amid Price Decline - MarketsMojo",
+        "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNbWdoUkpMaVFqZTU5UlUtTGJuTGNlZDhWRWhnd1BmemFoSV93aEUzVlVhNEhHajFORmZnUFViWjJCcWFocVNLMk5MbTN6cXRHV09lYmlUQWJhQ2hyM3ZXLWEyazZ0dTFMRGNqZUgxcUplYWN3T1RSOFg2ODd4N0d2eUFTUjZEVnlycFZZYUVVZ2JiNmdFWFItc2ZZeGtzRndvSFN4aFdKSEt6OWZHV0RXRXBwSjhxYWZXUmM2eXlEblZnVS1WRmhObjVR?oc=5",
+        "timestamp_ist": "02 Nov 18:37",
+        "provider": "MarketsMojo",
+        "source_tag": "google_news"
+      },
+      {
+        "headline": "Arihant Capital Markets Ltd Quality Grade Downgrade: A Detailed Fundamental Analysis",
+        "url": "http://www.bing.com/news/apiclick.aspx?ref=FexRss&aid=&tid=6ae9ea20e16e4720bf203f146374b441&url=https%3a%2f%2fwww.marketsmojo.com%2fnews%2fstocks-in-action%2farihant-capital-markets-ltd-quality-grade-downgrade-a-detailed-fundamental-analysis-4247993&c=8052874210933325965&mkt=en-in",
+        "timestamp_ist": "02 Nov 05:36",
+        "provider": "Bing News",
+        "source_tag": "bing_news"
+      },
+      {
+        "headline": "Diwali Stock Picks 2026: 12 Large-Cap Shares To Watch As Arihant Capital Sees Up To 49% Upside - Goodreturns",
+        "url": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxPWlFRV0RqZkFCM0x0aVpNWTNRbmVFenUyVlFPb2locnhEbmJDbHZ4ZFp0b0J4S3g2anIzdkJWV3NoUHJRUUZRTFM4Nk8yb0x2N051T1JtNk1mbFVLUVFFcU5mV2VtT3JVdDdmM2dESEJNWDBjRXZJT2FBRXlxdm5iajFBUk9JTERoTVE0TTd1OXppZUtJRTdzazFwYXVnbDF4QXhwUDNZbk5pN1JsZmVqX3BYXzNQVU5sQ2RxUjhrYlNZNnRocjhsMUMzY1UzdTN5cTFaODNkQjc3N3hsQlpWS3FuZw?oc=5",
+        "timestamp_ist": "31 Oct 19:09",
+        "provider": "Goodreturns",
+        "source_tag": "google_news"
+      },
+      {
+        "headline": "Arihant Capital Markets Q2 FY27 Newspaper Publication Filing - Kalkine India",
+        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPR05aZjgtMVRsUVJDek1TSy1XYlhtRF9wbG91RWhvbENza3UtRy1zVFowc2NoSGVBRXplS0ttcTdOUlFnOVhFVEpPVTVOUHVMR29sZVVBMEkyNnBuQm9mT2Q2cUdsN2NBY05jQ1g1TzRnMXpDbTJiT0RiZFEyRDI3ZzZCZk1pVlo3alA2ZDlVMlBOemhRZFNBQThFWFEtNk9tSExTZWNNQlkzc2VNVlVNQldaSkpSUUZDVWtZRVg4WGp1UjNURUdNaGtwNTQxWlAxZFktWFUtNA?oc=5",
+        "timestamp_ist": "31 Oct 15:58",
+        "provider": "Kalkine India",
+        "source_tag": "google_news"
+      },
+      {
+        "headline": "Arihant Capital Markets Q2 Results FY27: PAT Up 59.79% to Rs 20.90 Cr - Univest",
+        "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOSksxbjZpU2NEYnJvOUdYamQxYTBMZmNwTXk3OEpmZjhTZjVzTm41YVFBVTNCUFZ6b1M5QkpuMGRkTHUxYkdZeVFDRlVzSlNLRXM1VHoweFlRemh6RWFEQ29Bem1hb3NzVi1BVWRWSGp6SkFLRmVKUXdSc1ZRd3dhZzJIQQ?oc=5",
+        "timestamp_ist": "31 Oct 08:08",
+        "provider": "Univest",
         "source_tag": "google_news"
       },
       {

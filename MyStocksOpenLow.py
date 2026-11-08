@@ -120,7 +120,7 @@ def is_market_open(ist_now=None):
 OUTPUT_FILE = f"{BASE_DIR}/1hour_Condition_Met_Stocks.xlsx"
 TXT_FILE = f"{BASE_DIR}/matched_stocks1.txt"
 
-LOOKBACK_SESSIONS = 60
+LOOKBACK_SESSIONS = 160
 FETCH_CALENDAR_DAYS = 1300
 EMA_LENGTH = 10
 SUPERTREND_PERIOD = 14
@@ -133,12 +133,12 @@ FALLBACK_LOOKBACK_DAYS = 15
 # NEW: breakout confirmation no longer requires a strict close ABOVE PrevDay
 # High. A later close that lands within this % below PrevDay High still
 # counts as a confirmed breakout (e.g. 0.004 = 0.4%).
-BREAKOUT_TOLERANCE_PCT = 0.0152
+BREAKOUT_TOLERANCE_PCT = 0.0052
 
 # NEW: only keep rows in the final output whose FinalAcceptedDate falls
 # within this many days of today. Everything is still computed/logged
 # exactly as before — this only filters what gets saved to Excel/TXT.
-RECENT_ACCEPTED_LOOKBACK_DAYS = 20
+RECENT_ACCEPTED_LOOKBACK_DAYS = 120
 
 # ─────────────────────────────────────────
 # RATE LIMIT HANDLING (yfinance 429 protection)

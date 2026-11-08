@@ -29889,5 +29889,217 @@
     "pat_growth": 4.7,
     "rev_growth": -3.4,
     "score": 3
+  },
+  "ARIHANTCAP": {
+    "mcap": "\u20b99.45B",
+    "roe": 10.7,
+    "de": 0.56,
+    "pe": 23.432066,
+    "pb": 1.9521416,
+    "peg": 0.4,
+    "eps_ttm": 3.68,
+    "eps_forward": null,
+    "pm": 21.3,
+    "pat_cr": 21.5,
+    "pat_prev_cr": 12.7,
+    "rev_cr": 40.1,
+    "rev_prev_cr": 25.6,
+    "signal": "Strong",
+    "breakdown": [
+      {
+        "metric": "PE",
+        "display": "23.4x  \u2796 Fair",
+        "verdict": "neutral",
+        "score": 0
+      },
+      {
+        "metric": "PEG",
+        "display": "0.40 ~est  \u2705 Undervalued",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "PB",
+        "display": "2.0x  \u2705 Reasonable",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "ROE",
+        "display": "10.7%  \u2796 Average",
+        "verdict": "neutral",
+        "score": 0
+      },
+      {
+        "metric": "D/E",
+        "display": "0.56x  \u2705 Manageable",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "Margin",
+        "display": "21.3%  \u2705 Excellent",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "PAT Growth",
+        "display": "69.3%  \u2705 Strong YoY",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "Rev Growth",
+        "display": "56.6%  \u2705 Strong YoY",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "EPS Trend",
+        "display": "\u274c Volatile / Imbalanced (2 declining years out of 3)",
+        "verdict": "weak",
+        "score": -1
+      }
+    ],
+    "error": null,
+    "forward_pe": null,
+    "earnings_growth": 0.592,
+    "eps_history": [
+      {
+        "year": "2023",
+        "eps": 2.8
+      },
+      {
+        "year": "2024",
+        "eps": 6.77
+      },
+      {
+        "year": "2025",
+        "eps": 5.38
+      },
+      {
+        "year": "2026",
+        "eps": 2.87
+      }
+    ],
+    "eps_cagr": 0.8,
+    "eps_yoy": [
+      141.8,
+      -20.5,
+      -46.7
+    ],
+    "eps_trend_signal": "Volatile / Imbalanced",
+    "eps_trend_score": -1,
+    "eps_trend_note": "2 declining years out of 3",
+    "peg_calculated": true,
+    "pat_growth": 69.3,
+    "rev_growth": 56.6,
+    "score": 5
+  },
+  "TCIEXP": {
+    "mcap": "\u20b919.27B",
+    "roe": null,
+    "de": 0.08,
+    "pe": 22.91362,
+    "pb": 2.3523865,
+    "peg": 16.37,
+    "eps_ttm": 21.88,
+    "eps_forward": 28.73382,
+    "pm": 6.5,
+    "pat_cr": 20.5,
+    "pat_prev_cr": 19.5,
+    "rev_cr": 313.4,
+    "rev_prev_cr": 286.8,
+    "signal": "Moderate",
+    "breakdown": [
+      {
+        "metric": "PE",
+        "display": "22.9x  \u2796 Fair",
+        "verdict": "neutral",
+        "score": 0
+      },
+      {
+        "metric": "PEG",
+        "display": "16.37 ~est  \u274c Very Expensive",
+        "verdict": "weak",
+        "score": -1
+      },
+      {
+        "metric": "PB",
+        "display": "2.4x  \u2705 Reasonable",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "ROE",
+        "display": "N/A  \u2796",
+        "verdict": "neutral",
+        "score": 0
+      },
+      {
+        "metric": "D/E",
+        "display": "0.08x  \u2705 Low Debt",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "Margin",
+        "display": "6.5%  \u2796 Average",
+        "verdict": "neutral",
+        "score": 0
+      },
+      {
+        "metric": "PAT Growth",
+        "display": "5.1%  \u2705 Positive YoY",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "Rev Growth",
+        "display": "9.3%  \u2705 Growing",
+        "verdict": "good",
+        "score": 1
+      },
+      {
+        "metric": "EPS Trend",
+        "display": "\u274c Volatile / Imbalanced (3 declining years out of 3)",
+        "verdict": "weak",
+        "score": -1
+      }
+    ],
+    "error": null,
+    "forward_pe": 17.44808,
+    "earnings_growth": 0.014,
+    "eps_history": [
+      {
+        "year": "2023",
+        "eps": 36.2
+      },
+      {
+        "year": "2024",
+        "eps": 34.27
+      },
+      {
+        "year": "2025",
+        "eps": 22.31
+      },
+      {
+        "year": "2026",
+        "eps": 21.16
+      }
+    ],
+    "eps_cagr": -16.4,
+    "eps_yoy": [
+      -5.3,
+      -34.9,
+      -5.2
+    ],
+    "eps_trend_signal": "Volatile / Imbalanced",
+    "eps_trend_score": -1,
+    "eps_trend_note": "3 declining years out of 3",
+    "peg_calculated": true,
+    "pat_growth": 5.1,
+    "rev_growth": 9.3,
+    "score": 2
   }
 }
