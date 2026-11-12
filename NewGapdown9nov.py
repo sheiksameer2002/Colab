@@ -191,7 +191,6 @@ def fetch_with_retry(func, symbol, max_retries=MAX_RETRIES, base_delay=BASE_BACK
 # STOCK LIST (trimmed to 20 for testing — add the rest back later)
 # ─────────────────────────────────────────
 YSTOCKS=['AARTIDRUGS.NS','AGARWALEYE.NS','AARTIIND.NS','ACI.NS','ADVENZYMES.NS','AEGISVOPAK.NS','AEQUS.NS','AEROENTER.NS','AEROFLEX.NS','AEROPLANE.NS','AFCONS.NS','AGARWALEYE.NS','AGIIL.NS','AIIL.NS','AJMERA.NS','ALEMBICLTD.NS','ALGOQUANT.NS','AMAGI.NS','ANANTRAJ.NS','ANDHRAPAP.NS','ANDHRSUGAR.NS','AONESTEELS.NS','APCOTEXIND.NS','APOLLO.NS','APOLLOPIPE.NS','APOLLOTYRE.NS','ARCIL.NS','ARFIN.NS','ARIHANTCAP.NS','ARIS.NS','ARKADE.NS','ARSSBL.NS','ARTEMISMED.NS','ARVIND.NS','ASHAPURMIN.NS','ASHOKA.NS','ASIANENE.NS','ATGL.NS','AURIONPRO.NS','AURUM.NS','AVANTEL.NS','AVTNPL.NS','AWL.NS','AYMSYNTEX.NS','BAJAJCON.NS','BAJAJELEC.NS','BAJEL.NS','BALAJITELE.NS','BALUFORGE.NS','BANSALWIRE.NS','BECTORFOOD.NS','BELRISE.NS','BEPL.NS','BERGEPAINT.NS','BHAGERIA.NS','BHARATSE.NS','BIKAJI.NS','BIOCON.NS','BIRET.NS','BIRLACABLE.NS','BLEL.NS','BLKASHYAP.NS','BLS.NS','BLSE.NS','BLUEJET.NS','BLUSPRING.NS','BODALCHEM.NS','BOMDYEING.NS','BONDADA.NS','BOROLTD.NS','BORORENEW.NS','BRIGADE.NS','BRIGHOTEL.NS','BSOFT.NS','BUILDPRO.NS','CAMLINFINE.NS','CAMPUS.NS','CANHLIFE.NS','CAPACITE.NS','CAPILLARY.NS','CAPINVIT.NS','CARRARO.NS','CASTROLIND.NS','CCAVENUE.NS','CEIGALL.NS','CELLO.NS','CENTENKA.NS','CHAMBLFERT.NS','CIEINDIA.NS','CMPDI.NS','CMRGREEN.NS','CMSINFO.NS','COHANCE.NS','CONCOR.NS','CONFIPET.NS','CORDELIA.NS','CRAMC.NS','CRIZAC.NS','CROMPTON.NS','CUPID.NS','DABUR.NS','DALMIASUG.NS','DAMCAPITAL.NS','DBREALTY.NS','DCAL.NS','DCXINDIA.NS','DECNGOLD.NS','DEEDEV.NS','DEEPA.NS','DELHIVERY.NS','DELTACORP.NS','DHAMPURSUG.NS','DIGITIDE.NS','DYCL.NS','E2E.NS','EIEL.NS','EIHOTEL.NS','EKC.NS','ELECON.NS','ELECTCAST.NS','ELGIEQUIP.NS','ELLEN.NS','EMAMILTD.NS','EMMVEE.NS','EMUDHRA.NS','ENGINERSIN.NS','EPACK.NS','EPACKPEB.NS','EPL.NS','EUREKAFORB.NS','EUROPRATIK.NS','EXICOM.NS','EXIDEIND.NS','FDC.NS','FEDDERSHOL.NS','FILATEX.NS','FINPIPE.NS','FIRSTCRY.NS','FIVESTAR.NS','FSL.NS','FUSIONCX.NS','GAEL.NS','GAJA.NS','GANDHAR.NS','GARUDA.NS','GENESYS.NS','GENUSPOWER.NS','GEOJITFSL.NS','GHCL.NS','GHCLTEXTIL.NS','GICRE.NS','GIPCL.NS','GKENERGY.NS','GKSL.NS','GLASSWALL.NS','GMDCLTD.NS','GNA.NS','GNFC.NS','GNRL.NS','GOCOLORS.NS','GODAVARIB.NS','GODIGIT.NS','GOKULAGRO.NS','GOLDIAM.NS','GOODLUCK.NS','GPIL.NS','GPPL.NS','GPTINFRA.NS','GRAUWEIL.NS','GREAVESCOT.NS','GREENPANEL.NS','GREENPLY.NS','GRMOVER.NS','GSFC.NS','GSPCROP.NS','GSPLTRANS.NS','GUFICBIO.NS','GUJENERGY.NS','GUJTHEM.NS','GYFTR.NS','HAPPSTMNDS.NS','HDFIRE.NS','HEGAM.NS','HEIDELBERG.NS','HEMIPROP.NS','HERITGFOOD.NS','HEROMOTORS.NS','HEXT.NS','HFCL.NS','HIKAL.NS','HINDCOPPER.NS','HINDOILEXP.NS','HITECH.NS','HLEGLAS.NS','HONASA.NS','HPL.NS','HSCL.NS','HUBTOWN.NS','HUHTAMAKI.NS','ICICILIFE.NS','ICIL.NS','IEX.NS','IFCI.NS','IGIL.NS','IGL.NS','IIFLCAPS.NS','INA.NS','INDIACEM.NS','INDIAGLYCO.NS','INDOCO.NS','INDRAMEDCO.NS','INDSWFTLAB.NS','INDUSINVIT.NS','INFOBEAN.NS','INOXGREEN.NS','INOXWIND.NS','INTELLECT.NS','IOLCP.NS','IONEXCHANG.NS','IRCON.NS','IRCTC.NS','IRISDOREME.NS','ITCHOTELS.NS','ITI.NS','IVALUE.NS','IXIGO.NS','JAGRAN.NS','JAGSNPHARM.NS','JAIBALAJI.NS','JAICORPLTD.NS','JAINREC.NS','JAMNAAUTO.NS','JASH.NS','JAYBARMARU.NS','JAYKAY.NS','JAYNECOIND.NS','JINDALSAW.NS','JINDRILL.NS','JKIL.NS','JKLAKSHMI.NS','JKPAPER.NS','JKTYRE.NS','JLHL.NS','JMFINANCIL.NS','JSLL.NS','JSWCEMENT.NS','JSWDULUX.NS','JSWINFRA.NS','JTLIND.NS','JUNIPER.NS','JWL.NS','JYOTHYLAB.NS','KALAMANDIR.NS','KALYANKJIL.NS','KANSAINER.NS','KARAMTARA.NS','KEC.NS','KIRIINDUS.NS','KIRLFER.NS','KIRLPNU.NS','KISSHT.NS','KLBRENG-B.NS','KMCSHIL.NS','KNACK.NS','KNRCON.NS','KOLTEPATIL.NS','KOPRAN.NS','KPEL.NS','KPITTECH.NS','KRBL.NS','KROSS.NS','KRT.NS','KUSUMGAR.NS','LALITHAA.NS','LAOPALA.NS','LATENTVIEW.NS','LCCPROJECT.NS','LCL.NS','LEAPIND.NS','LINCOLN.NS','LLOYDSENGG.NS','LLOYDSENT.NS','LOTUSDEV.NS','LTFOODS.NS','LUMINO.NS','LXCHEM.NS','MAHLIFE.NS','MAHLOG.NS','MAHSEAMLES.NS','MANAKCOAT.NS','MANALIPETC.NS','MANINFRA.NS','MARINE.NS','MARKSANS.NS','MARSONS.NS','MASTERTR.NS','MBEL.NS','MEDIASSIST.NS','MENONBE.NS','METROPOLIS.NS','MIDHANI.NS','MINDSPACE.NS','MMTC.NS','MOBIKWIK.NS','MODISONLTD.NS','MOIL.NS','MOL.NS','MOREPENLAB.NS','MOSCHIP.NS','MPIMANIPAL.NS','MRPL.NS','MSTCLTD.NS','MUNJALAU.NS','NACLIND.NS','NATIONALUM.NS','NAVA.NS','NAVKARCORP.NS','NAVNETEDUL.NS','NAZARA.NS','NBCC.NS','NCC.NS','NELCAST.NS','NEWGEN.NS','NHIT.NS','NIACL.NS','NIITLTD.NS','NIITMTS.NS','NITCO.NS','NIVABUPA.NS','NMDC.NS','NOCIL.NS','NRBBEARING.NS','NUVOCO.NS','NXST.NS','OIL.NS','ONEPOINT.NS','ORIANA.NS','ORIENTCABL.NS','ORIENTCEM.NS','ORIENTELEC.NS','ORIENTHOT.NS','OSWALPUMPS.NS','PACEDIGITK.NS','PANAMAPET.NS','PANORAMA.NS','PARACABLES.NS','PARAGMILK.NS','PARKHOSPS.NS','PARKHOTELS.NS','PASHUPATI.NS','PATANJALI.NS','PDSL.NS','PENIND.NS','PETRONET.NS','PGEL.NS','PGINVIT.NS','PINELABS.NS','PLATIND.NS','PNCINFRA.NS','POCL.NS','POWERICA.NS','PPLPHARMA.NS','PRAJIND.NS','PRAKASH.NS','PRANAV.NS','PRECWIRE.NS','PREMIERPOL.NS','PRINCEPIPE.NS','PTC.NS','PWL.NS','QUADFUTURE.NS','QUESS.NS','RAILTEL.NS','RAJOOENG.NS','RALLIS.NS','RAMBHAJO.NS','RAMCOSYS.NS','RAMKY.NS','RATNAVEER.NS','RAYMONDLSL.NS','RAYMONDREL.NS','RCF.NS','REDINGTON.NS','REDTAPE.NS','REFEX.NS','RELAXO.NS','RELIGARE.NS','RENTOMOJO.NS','RESPONIND.NS','RGL.NS','RHIM.NS','RICOAUTO.NS','RIIT.NS','RIR.NS','RITES.NS','ROLEXRINGS.NS','ROTO.NS','ROUTE.NS','RSL.NS','RSYSTEMS.NS','RUPA.NS','RUSTOMJEE.NS','RVNL.NS','SAIL.NS','SAIPARENT.NS','SAKSOFT.NS','SAMBHV.NS','SAMHI.NS','SANDHAR.NS','SANDUMA.NS','SANGHVIMOV.NS','SANSTAR.NS','SAPPHIRE.NS','SARDAEN.NS','SAREGAMA.NS','SCI.NS','SDBL.NS','SEIL.NS','SENCO.NS','SERVOTECH.NS','SESHAPAPER.NS','SETL.NS','SFL.NS','SHADOWFAX.NS','SHAKTIPUMP.NS','SHANKESH.NS','SHANTIGOLD.NS','SHAREINDIA.NS','SHIPROCKET.NS','SHK.NS','SHRINGARMS.NS','SHRIRAMPPS.NS','SHUKRAPHAR.NS','SILVERTUC.NS','SIRCA.NS','SKIPPER.NS','SKMEGGPROD.NS','SMSPHARMA.NS','SMT.NS','SOLARWORLD.NS','SONATSOFTW.NS','SPARC.NS','SPIC.NS','SPMLINFRA.NS','SPORTKING.NS','SRM.NS','SSWL.NS','STALLION.NS','STARCEMENT.NS','STARHEALTH.NS','STYL.NS','SULA.NS','SUMICHEM.NS','SUNFLAG.NS','SUNSHINE.NS','SUNTECK.NS','SURYAROSNI.NS','SUVEN.NS','SWANCORP.NS','SWIGGY.NS','SYMPHONY.NS','SYNGENE.NS','TALBROAUTO.NS','TARIL.NS','TCIEXP.NS','TECHNOCRAF.NS','TEMBO.NS','TEMPSENS.NS','TENNIND.NS','TEXINFRA.NS','TEXRAIL.NS','TFCILTD.NS','TGVSL.NS','THOMASCOOK.NS','THYROCARE.NS','TI.NS','TIMETECHNO.NS','TNPETRO.NS','TRANSRAILL.NS','TRITURBINE.NS','TRIVENI.NS','TRIVENIPT.NS','TRUALT.NS','TURTLEMINT.NS','UDS.NS','UNITEDPOLY.NS','UPL.NS','URBANCO.NS','USHAMART.NS','UTLSOLAR.NS','UTTAMSUGAR.NS','V2RETAIL.NS','VAIBHAVGBL.NS','VALIANTORG.NS','VARMORA.NS','VGUARD.NS','VIDYAWIRES.NS','VIKRAMSOLR.NS','VIKRAN.NS','VIMTALABS.NS','VINCOFE.NS','VIYASH.NS','VMARCIND.NS','VMM.NS','VRLLOG.NS','VSSL.NS','VSTIND.NS','VTL.NS','WAKEFIT.NS','WALCHANNAG.NS','WCIL.NS','WEBELSOLAR.NS','WELSPUNLIV.NS','XTRANET.NS','YATRA.NS','ZAGGLE.NS','ZEEL.NS','ZENSARTECH.NS','ZETWERK.NS']
-
 def convert_to_fyers(symbol):
     if symbol.endswith(".NS"):
         return f"NSE:{symbol.replace('.NS', '')}-EQ"
@@ -547,6 +546,29 @@ def confirm_supertrend_direction(st_df):
 
 
 # ─────────────────────────────────────────
+# NEW: DAILY SUPERTREND ON A SPECIFIC DATE (e.g. the FinalAcceptedDate candle)
+# ─────────────────────────────────────────
+def get_daily_st_on_date(st_df, target_date):
+    """
+    Returns (supertrend_value, real_color, adjusted_color) for the daily candle on
+    target_date.
+      real_color     → raw Supertrend direction (what a chart indicator shows)
+      adjusted_color → the confirmation-adjusted colour (confirm_supertrend_direction)
+    """
+    if st_df is None or st_df.empty:
+        return None, "NA", "NA"
+    ts = pd.Timestamp(target_date)
+    if ts not in st_df.index:
+        return None, "NA", "NA"
+    row = st_df.loc[ts]
+    val = round(float(row['Supertrend']), 2) if pd.notna(row['Supertrend']) else None
+    raw_dir, conf_dir = row['ST_Direction'], row['ST_Direction_Confirmed']
+    real = "NA" if pd.isna(raw_dir) else ("Green" if raw_dir == 1 else "Red")
+    adj = "NA" if (conf_dir is None or pd.isna(conf_dir)) else ("Green" if conf_dir == 1 else "Red")
+    return val, real, adj
+
+
+# ─────────────────────────────────────────
 # NEW: PREV-5-CANDLE EMA STATS (for Prev5Close / Prev5EMALines columns)
 # ─────────────────────────────────────────
 def compute_prev5_ema_stats(daily, accepted_date, window=PREV_CANDLES_WINDOW):
@@ -608,54 +630,66 @@ def compute_entry_move(daily, accepted_date, move_pct=ENTRY_MOVE_PCT):
     """
     Entry = OPEN of the candle right AFTER the FinalAcceptedDate candle.
     From that entry price we look for the first +9% (High >= entry*1.09)
-    and the first -9% (Low <= entry*0.91). Day 1 = the entry candle itself.
+    and the first -9% (Low <= entry*0.91), using each candle's intraday High / Low.
+    Day 1 = the entry candle itself.
 
-    Returns a text label:
-      "UP in N days"                               → +9% hit first
-      "DOWN in N days, recovered in M days"        → -9% hit first, then +9% (from entry)
-                                                     was hit M trading days AFTER the down hit
-      "DOWN in N days, not recovered yet"          → -9% hit first, +9% not hit yet
-      "BOTH hit same day (N), order unclear"       → daily candle touched both levels
-      "No 9% move yet (N days)"                    → neither level hit so far
-      "Pending - no entry candle yet"              → accepted candle is the latest candle
+    Returns (label, entry_date, entry_price, up_hit_date, down_hit_date):
+
+      label is one of
+        "UP in N days"                               → +9% hit first
+        "DOWN in N days, recovered in M days"        → -9% hit first, then +9% (from entry)
+                                                       was hit M trading days AFTER the down hit
+        "DOWN in N days, not recovered yet"          → -9% hit first, +9% not hit yet
+        "BOTH hit same day (N), order unclear"       → daily candle touched both levels
+        "No 9% move yet (N days)"                    → neither level hit so far
+        "Pending - no entry candle yet"              → accepted candle is the latest candle
+
+      entry_date / entry_price / up_hit_date / down_hit_date are returned so the
+      Excel sheet can show exactly what the 9% was measured from (audit columns).
     """
     matches = daily.index[daily['Date'] == pd.Timestamp(accepted_date)]
     if len(matches) == 0:
-        return "NA"
+        return "NA", None, None, None, None
 
     entry_pos = matches[0] + 1
     if entry_pos >= len(daily):
-        return "Pending - no entry candle yet"
+        return "Pending - no entry candle yet", None, None, None, None
 
-    entry_price = daily['Open'].iloc[entry_pos]
+    entry_date = daily['Date'].iloc[entry_pos].date()
+    entry_price = float(daily['Open'].iloc[entry_pos])
     up_level = entry_price * (1 + move_pct)
     down_level = entry_price * (1 - move_pct)
+    EPS = 1e-9  # float safety: e.g. 100*1.09 = 109.00000000000001, so a High of exactly 109.00 must still count
 
     up_day, down_day = None, None
+    up_hit_date, down_hit_date = None, None
     for k in range(entry_pos, len(daily)):
         day_n = k - entry_pos + 1
-        if up_day is None and daily['High'].iloc[k] >= up_level:
+        if up_day is None and daily['High'].iloc[k] >= up_level - EPS:
             up_day = day_n
-        if down_day is None and daily['Low'].iloc[k] <= down_level:
+            up_hit_date = daily['Date'].iloc[k].date()
+        if down_day is None and daily['Low'].iloc[k] <= down_level + EPS:
             down_day = day_n
+            down_hit_date = daily['Date'].iloc[k].date()
         if up_day is not None and down_day is not None:
             break  # both levels found — nothing more to scan
 
     total_days = len(daily) - entry_pos
+    details = (entry_date, round(entry_price, 2), up_hit_date, down_hit_date)
 
     if up_day is None and down_day is None:
-        return f"No {move_pct*100:.0f}% move yet ({_days_txt(total_days)})"
+        return (f"No {move_pct*100:.0f}% move yet ({_days_txt(total_days)})",) + details
 
     if up_day is not None and down_day is not None and up_day == down_day:
-        return f"BOTH hit same day ({_days_txt(up_day)}), order unclear"
+        return (f"BOTH hit same day ({_days_txt(up_day)}), order unclear",) + details
 
     if down_day is None or (up_day is not None and up_day < down_day):
-        return f"UP in {_days_txt(up_day)}"
+        return (f"UP in {_days_txt(up_day)}",) + details
 
     # down hit first
     if up_day is None:
-        return f"DOWN in {_days_txt(down_day)}, not recovered yet"
-    return f"DOWN in {_days_txt(down_day)}, recovered in {_days_txt(up_day - down_day)}"
+        return (f"DOWN in {_days_txt(down_day)}, not recovered yet",) + details
+    return (f"DOWN in {_days_txt(down_day)}, recovered in {_days_txt(up_day - down_day)}",) + details
 
 
 # ─────────────────────────────────────────
@@ -745,6 +779,15 @@ def evaluate_conditions(df, name, live_ltp=None, market_open_now=None, missing_d
             current_st_color = "Green" if last_daily_st_row['ST_Direction_Confirmed'] == 1 else "Red"
             current_above_st = last_daily_st_row['ST_Direction_Confirmed'] == 1
 
+    # NEW: REAL (raw, unadjusted) daily Supertrend colour of the latest closed candle —
+    # straight from compute_supertrend()'s ST_Direction, NOT the lag-adjusted
+    # ST_Direction_Confirmed used for CurrentDailySupertrendColor / rescue logic above.
+    current_st_real_color = "NA"
+    if daily_st is not None and not daily_st.empty:
+        _raw_dir_last = daily_st.iloc[-1]['ST_Direction']
+        if pd.notna(_raw_dir_last):
+            current_st_real_color = "Green" if _raw_dir_last == 1 else "Red"
+
     current_passes_ema = pd.notna(current_ema_ref) and current_price > current_ema_ref
     crossed_label = "LTP crossed 10EMA ✅" if current_passes_ema else "LTP NOT crossed 10EMA ❌"
     ema_ref_str = f"{current_ema_ref:.2f}" if pd.notna(current_ema_ref) else "NA"
@@ -764,6 +807,16 @@ def evaluate_conditions(df, name, live_ltp=None, market_open_now=None, missing_d
     # Causal 20EMA(Low) series, used for the post-acceptance integrity check
     # AND for the new Prev5EMALines touch check
     daily['EMA20_Low_Full'] = daily['Low'].ewm(span=20, adjust=False, min_periods=20).mean()
+    # NEW: Supertrend over the FULL daily history so we can read its colour on the
+    # FinalAcceptedDate candle of each event (the "Current..." columns only describe
+    # the LATEST candle, not the accepted date).
+    daily_st_full = None
+    if len(daily) >= SUPERTREND_PERIOD:
+        daily_st_full = compute_supertrend(
+            daily.set_index('Date')[['Open', 'High', 'Low', 'Close']],
+            SUPERTREND_PERIOD, SUPERTREND_MULTIPLIER
+        )
+        daily_st_full = confirm_supertrend_direction(daily_st_full)
     start_idx = max(1, len(daily) - LOOKBACK_SESSIONS)
 
     for i in range(start_idx, len(daily)):
@@ -808,7 +861,8 @@ def evaluate_conditions(df, name, live_ltp=None, market_open_now=None, missing_d
 
         ema_distance_pct = round((ema_ref_price / event_ema - 1) * 100, 2) if pd.notna(event_ema) else None
 
-        # Acceptance is purely daily (no weekly Supertrend / weekly high fallback):
+        # Acceptance is purely daily (no weekly Supertrend / weekly high fallback), and the
+        # acceptance candle must also have REAL daily Supertrend GREEN (see scan below):
         #   PATH A — event candle's price is above its own-day 10EMA(Low):
         #            breakout needs a later close >= PrevDay High minus the tolerance band.
         #   PATH B — event candle's price is NOT above its own-day 10EMA(Low):
@@ -824,18 +878,40 @@ def evaluate_conditions(df, name, live_ltp=None, market_open_now=None, missing_d
             breakout_threshold = prev_row['High']
             use_tolerance = False
 
+        # The acceptance candle must satisfy BOTH:
+        #   (1) the price condition (close within tolerance of / above PrevDay High — per path above)
+        #   (2) REAL (raw, unadjusted) daily Supertrend == GREEN on that same candle
+        # If the price condition is met while Supertrend is still red, that candle is NOT accepted;
+        # we keep scanning and accept the first later candle that meets the price condition
+        # while Supertrend is green.
         breakout_confirmed, breakout_date, breakout_close = False, None, None
+        first_price_met_date = None   # first candle that met the price condition (any Supertrend colour)
+        st_blocked_dates = []         # candles that met the price condition but real Supertrend was red
         for j in range(i + 1, len(daily)):
             later_row = daily.iloc[j]
-            hit = (later_row['Close'] >= breakout_threshold) if use_tolerance else (later_row['Close'] > breakout_threshold)
-            if hit:
+            price_ok = (later_row['Close'] >= breakout_threshold) if use_tolerance else (later_row['Close'] > breakout_threshold)
+            if not price_ok:
+                continue
+
+            if first_price_met_date is None:
+                first_price_met_date = later_row['Date']
+
+            st_dir_j = daily_st_full['ST_Direction'].iloc[j] if daily_st_full is not None else float('nan')
+            if pd.notna(st_dir_j) and st_dir_j == 1:
                 breakout_confirmed = True
                 breakout_date = later_row['Date']
                 breakout_close = later_row['Close']
                 break
 
+            st_blocked_dates.append(later_row['Date'].date())
+
         if not breakout_confirmed:
-            if use_tolerance:
+            if st_blocked_dates:
+                print(
+                    f"⛔ {name} → {today_date.date()} price condition met on {st_blocked_dates[0]} "
+                    f"({len(st_blocked_dates)} candle(s)) but real Supertrend was RED on all of them — not accepted"
+                )
+            elif use_tolerance:
                 print(
                     f"⛔ {name} → {today_date.date()} confirmed, but price never recovered within "
                     f"{BREAKOUT_TOLERANCE_PCT*100:.2f}% of PrevDay High={prev_row['High']:.2f} — skipping"
@@ -846,6 +922,12 @@ def evaluate_conditions(df, name, live_ltp=None, market_open_now=None, missing_d
                     f"and no close above PrevDay High={prev_row['High']:.2f}"
                 )
             continue
+
+        if st_blocked_dates:
+            print(
+                f"⏳ {name} → {today_date.date()} price condition first met on {first_price_met_date.date()} "
+                f"but real Supertrend was RED — accepted later on {breakout_date.date()} when Supertrend was GREEN"
+            )
 
         breakout_pct_vs_high = round((breakout_close / prev_row['High'] - 1) * 100, 2)
 
@@ -900,7 +982,23 @@ def evaluate_conditions(df, name, live_ltp=None, market_open_now=None, missing_d
         )
 
         # NEW: entry at next candle's open after FinalAcceptedDate → +9% or -9% first?
-        up_down_move = compute_entry_move(daily, final_accepted_date)
+        (up_down_move, entry_date_val, entry_price_val,
+         up_hit_date_val, down_hit_date_val) = compute_entry_move(daily, final_accepted_date)
+
+        # NEW: Supertrend on the FinalAcceptedDate candle itself
+        acc_st_val, acc_st_real_color, acc_st_adj_color = get_daily_st_on_date(daily_st_full, final_accepted_date)
+
+        # NEW: EntryPrice / ExitPrice only for trades that ended in profit:
+        #   - "UP in N days"                         → exit at the +9% level
+        #   - "DOWN in N days, recovered in M days"  → exit at the +9% level (after recovering)
+        # Everything else (down not recovered, no move yet, both same day, pending) stays blank.
+        is_up_or_recovered = up_down_move.startswith("UP in") or ", recovered in" in up_down_move
+        if is_up_or_recovered and entry_price_val is not None:
+            trade_entry_price = entry_price_val
+            trade_exit_price = round(entry_price_val * (1 + ENTRY_MOVE_PCT), 2)
+        else:
+            trade_entry_price = None
+            trade_exit_price = None
 
         # NEW: how many trading days (candles) before the FinalAcceptedDate the
         # condition (gap-down) candle formed — e.g. "10 days ago", "1 day ago".
@@ -931,6 +1029,12 @@ def evaluate_conditions(df, name, live_ltp=None, market_open_now=None, missing_d
             # used by filter_recent_accepted() to rescue stale-but-still-trending rows.
             "CurrentDailySupertrend": round(current_st_val, 2) if current_st_val is not None else None,
             "CurrentDailySupertrendColor": current_st_color,
+            # NEW COLUMN — real/raw daily Supertrend colour (no confirmation adjustment)
+            "CurrentDailySupertrendRealColor": current_st_real_color,
+            # NEW COLUMNS — Supertrend as of the FinalAcceptedDate candle (value, real/raw colour, adjusted colour)
+            "AcceptedDateSupertrend": acc_st_val,
+            "AcceptedDateSTRealColor": acc_st_real_color,
+            "AcceptedDateSTColor": acc_st_adj_color,
             "CurrentAboveSupertrend": current_above_st,
             "EventCandlePrice": round(event_price, 2),
             "EventDay10EMA_Low": round(event_ema, 2) if pd.notna(event_ema) else None,
@@ -938,6 +1042,8 @@ def evaluate_conditions(df, name, live_ltp=None, market_open_now=None, missing_d
             "EMADistanceBasis": "Close" if condition_candle_color == "Red" else "Open",
             "ConfirmedBy": confirmed_by,
             "PrevDayHigh": round(prev_row['High'], 2),
+            # NEW COLUMN — first candle that met the price condition, even if Supertrend was red then
+            "FirstPriceMetDate": first_price_met_date.date() if first_price_met_date is not None else None,
             "BreakoutDate": breakout_date.date(),
             "BreakoutClose": round(breakout_close, 2),
             "BreakoutPctVsPrevHigh": breakout_pct_vs_high,
@@ -953,6 +1059,13 @@ def evaluate_conditions(df, name, live_ltp=None, market_open_now=None, missing_d
             "Prev5EMALines": prev5_ema_lines,
             # NEW COLUMN — entry = next candle open after FinalAcceptedDate; which 9% level hit first
             "UpDownMove": up_down_move,
+            # AUDIT COLUMNS — what the 9% was measured from, and when each level was touched
+            "UpDownEntryDate": entry_date_val,
+            # EntryPrice / ExitPrice — only filled for UP or recovered rows (exit = entry +9%)
+            "EntryPrice": trade_entry_price,
+            "ExitPrice": trade_exit_price,
+            "Up9HitDate": up_hit_date_val,
+            "Down9HitDate": down_hit_date_val,
             # NEW COLUMN — trading days between the condition candle and the FinalAcceptedDate candle
             "ConditionFormationDays": condition_formation_label,
         })
