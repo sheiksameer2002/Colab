@@ -1,4 +1,4 @@
-#Interacitve charts code with no auto load
+#Interacitve charts code with no auto load november 11th
 import subprocess
 import sys
 import shutil
@@ -246,6 +246,10 @@ condition_met_map   = {}
 accepted_date_map   = {}   # { symbol: [ {"condition_met": "YYYY-MM-DD", "accepted": "YYYY-MM-DD"}, ... ] } sorted newest accepted first
 ema_distance_map    = {}   # { symbol: [ {"condition_met": "YYYY-MM-DD", "ema_distance": float}, ... ] } sorted newest condition_met first
 never_below_10ema_map = {}   # { symbol: [ {"condition_met": "YYYY-MM-DD", "value": "Yes"/"No"}, ... ] } sorted newest condition_met first
+pattern_label_map     = {}
+trade_status_map      = {}
+updown_move_map       = {}
+
 
 def _parse_excel_date(date_val):
     if pd.isna(date_val):
@@ -254,11 +258,14 @@ def _parse_excel_date(date_val):
            else str(date_val).strip()[:10]
 
 def load_condition_met_excel():
-    global condition_met_map, accepted_date_map, ema_distance_map, never_below_10ema_map
+    global condition_met_map, accepted_date_map, ema_distance_map, never_below_10ema_map, pattern_label_map, trade_status_map, updown_move_map
     condition_met_map = {}
     accepted_date_map  = {}
     ema_distance_map   = {}
     never_below_10ema_map = {}
+    pattern_label_map = { }
+    trade_status_map = { }
+    updown_move_map = {}
     if not os.path.exists(CONDITION_MET_EXCEL):
         print(f"⚠ Condition met Excel not found: {CONDITION_MET_EXCEL}")
         return
@@ -271,6 +278,9 @@ def load_condition_met_excel():
         has_accepted_col = "FinalAcceptedDate" in df_cond.columns
         has_ema_dist_col = "EMADistancePct" in df_cond.columns
         has_never_below_col = "CloseNeverBelow10EMA" in df_cond.columns
+        has_pattern_col = "PatternLabel" in df_cond.columns
+        has_trade_col = "TradeStatus" in df_cond.columns
+        has_updown_col = "UpDownMove" in df_cond.columns
         for _, row in df_cond.iterrows():
             sym      = _to_plain_name(str(row["StockName"]))
             date_str = _parse_excel_date(row["ConditionMetDate"])
@@ -280,13 +290,26 @@ def load_condition_met_excel():
             if date_str not in condition_met_map[sym]:
                 condition_met_map[sym].append(date_str)
 
+            row_updown = ""
+            if has_updown_col and pd.notna(row["UpDownMove"]):
+                row_updown = str(row["UpDownMove"]).strip()
+
             if has_accepted_col:
                 accepted_str = _parse_excel_date(row["FinalAcceptedDate"])
                 if accepted_str:
+                    row_pattern = ""
+                    if has_pattern_col and pd.notna(row["PatternLabel"]):
+                        row_pattern = str(row["PatternLabel"]).strip()
+                    row_trade = ""
+                    if has_trade_col and pd.notna(row["TradeStatus"]):
+                        row_trade = str(row["TradeStatus"]).strip()
                     accepted_date_map.setdefault(sym, [])
                     accepted_date_map[sym].append({
                         "condition_met": date_str,
                         "accepted": accepted_str,
+                        "pattern": row_pattern,
+                        "trade": row_trade,
+                        "updown": row_updown,
                     })
 
             if has_ema_dist_col:
@@ -307,13 +330,47 @@ def load_condition_met_excel():
                         "condition_met": date_str,
                         "value": nb_str,
                     })
-
+            if has_pattern_col:
+                pl_val = row["PatternLabel"]
+                if pd.notna(pl_val):
+                    pl_str = str(pl_val).strip()
+                    if pl_str:
+                        pattern_label_map.setdefault(sym, [])
+                        pattern_label_map[sym].append({
+                            "condition_met": date_str,
+                            "value": pl_str,
+                        })
+            if has_trade_col:
+                ts_val = row["TradeStatus"]
+                if pd.notna(ts_val):
+                    ts_str = str(ts_val).strip()
+                    if ts_str:
+                        trade_status_map.setdefault(sym, [])
+                        trade_status_map[sym].append({
+                            "condition_met": date_str,
+                            "value": ts_str,
+                        })
+            if has_updown_col and row_updown:
+                updown_move_map.setdefault(sym, [])
+                updown_move_map[sym].append({
+                    "condition_met": date_str,
+                    "value": row_updown,
+                })
         for sym in accepted_date_map:
             accepted_date_map[sym].sort(key=lambda x: x["accepted"], reverse=True)
         for sym in ema_distance_map:
             ema_distance_map[sym].sort(key=lambda x: x["condition_met"], reverse=True)
         for sym in never_below_10ema_map:
             never_below_10ema_map[sym].sort(key=lambda x: x["condition_met"], reverse=True)
+        for sym in pattern_label_map:
+            pattern_label_map[sym].sort(key=lambda x: x["condition_met"], reverse=True)
+        for sym in trade_status_map:
+            trade_status_map[sym].sort(key=lambda x: x["condition_met"], reverse=True)
+        for sym in updown_move_map:
+            updown_move_map[sym].sort(key=lambda x: x["condition_met"], reverse=True)
+        print(f"✅ UpDownMove data loaded for {len(updown_move_map)} stocks")
+        print(f"✅ Trade status data loaded for {len(trade_status_map)} stocks")
+        print(f"✅ Pattern label data loaded for {len(pattern_label_map)} stocks")
         print(f"✅ Condition met data loaded for {len(condition_met_map)} stocks")
         print(f"✅ Accepted date data loaded for {len(accepted_date_map)} stocks")
         print(f"✅ EMA distance data loaded for {len(ema_distance_map)} stocks")
@@ -2143,7 +2200,7 @@ def api_accepted_date_summary():
         entries = accepted_date_map.get(name, [])
         result[name] = {
             "latest_accepted": entries[0]["accepted"] if entries else "",
-            "recent": entries[:3],
+            "recent": entries,
         }
     return jsonify(result)
 
@@ -2168,7 +2225,26 @@ def api_never_below_10ema_summary():
             "recent": entries[:3],
         }
     return jsonify(result)
-
+@app.route("/api/pattern_label_summary")
+def api_pattern_label_summary():
+    result = {}
+    for name in STOCKS:
+        entries = pattern_label_map.get(name, [])
+        result[name] = {
+            "latest_value": entries[0]["value"] if entries else "",
+            "recent": entries[:3],
+        }
+    return jsonify(result)
+@app.route("/api/trade_status_summary")
+def api_trade_status_summary():
+    result = {}
+    for name in STOCKS:
+        entries = trade_status_map.get(name, [])
+        result[name] = {
+            "latest_value": entries[0]["value"] if entries else "",
+            "recent": entries[:3],
+        }
+    return jsonify(result)
 @app.route("/api/fundamentals")
 def api_fundamentals():
     name = request.args.get("symbol", "")
@@ -2179,6 +2255,17 @@ def api_fundamentals():
     if data is None:
         return jsonify({"not_fetched": True})
     return jsonify(data)
+
+@app.route("/api/updown_move_summary")
+def api_updown_move_summary():
+    result = {}
+    for name in STOCKS:
+        entries = updown_move_map.get(name, [])
+        result[name] = {
+            "latest_value": entries[0]["value"] if entries else "",
+            "recent": entries[:3],
+        }
+    return jsonify(result)
 
 @app.route("/api/fundamentals_all")
 def api_fundamentals_all():
@@ -2290,7 +2377,7 @@ HTML = r"""
   .mode-new { background:#0f3320; color:#4ade80; border:1px solid #166534; }
   .sort-wrap { display:flex; align-items:center; gap:6px; }
   .sort-wrap label { color:var(--muted); font-size:11px; white-space:nowrap; }
-  #sortSelect { background:#1a1a1a; color:var(--text); border:1px solid var(--border);
+  #sortSelect, #tradeFilter { background:#1a1a1a; color:var(--text); border:1px solid var(--border);
     border-radius:6px; padding:4px 8px; font-size:12px; cursor:pointer; outline:none; }
   .btn { display:inline-flex; align-items:center; gap:5px; padding:5px 11px; border-radius:6px;
     font-size:12px; font-weight:500; border:1px solid transparent; cursor:pointer;
@@ -2353,6 +2440,8 @@ HTML = r"""
     border-right:2px solid var(--border); display:flex; flex-direction:column; gap:3px;
     justify-content:flex-start; background:#0c0c0c; position:sticky; left:0; z-index:10; }
   .info-name { font-size:14px; font-weight:700; color:var(--accent); letter-spacing:.3px; }
+  .pattern-badge { font-size:10px; font-weight:700; color:#fb923c; letter-spacing:.3px;
+    display:none; width:fit-content; }  
   .info-ltp  { font-size:13px; font-weight:600; color:var(--text); }
   .info-chg  { font-size:11px; font-weight:600; padding:2px 6px; border-radius:4px;
     display:inline-block; width:fit-content; }
@@ -2452,9 +2541,35 @@ HTML = r"""
                <option value="accept_date">Accepted Date: Latest First</option>
                <option value="ema_dist_asc">EMA Distance: Near → Far</option>
                <option value="never_below_10ema">Close Never Below 10 EMA: Yes → No</option>
+            <option value="pattern:Possibly Uptrend Reversal">Pattern: Possibly Uptrend Reversal</option>
+      <option value="pattern:Uptrend">Pattern: Uptrend</option>
+      <option value="pattern:Sideways">Pattern: Sideways</option>
+      <option value="pattern:Downtrend">Pattern: Downtrend</option>
+      <option value="pattern:Possibly Downtrend Reversal">Pattern: Possibly Downtrend Reversal</option>         
       <option value="above_st_1d">Above Supertrend (1D)</option>
       <option value="above_st_1w">Above Supertrend (1W)</option>
       <option value="fund_score_desc">Fundamentals: Strong → Avoid</option>
+    </select>
+  </div>
+    <div class="sep"></div>
+  <div class="sort-wrap">
+    <label>Filter:</label>
+    <select id="tradeFilter">
+      <option value="all">All Stocks</option>
+      <option value="TG Hit">TG Hit</option>
+            <option value="SL Hit">SL Hit</option>
+    </select>
+  </div>
+  <div class="sort-wrap">
+    <label>Move:</label>
+    <select id="moveFilter" style="background:#1a1a1a;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;outline:none;">
+      <option value="all">All Moves</option>
+      <option value="up">UP</option>
+      <option value="down">DOWN (all)</option>
+      <option value="down_not_recovered">DOWN – Not Recovered Yet</option>
+      <option value="down_recovered">DOWN – Recovered</option>
+    </select>
+  </div>
     </select>
   </div>
   <div class="sep"></div>
@@ -2469,11 +2584,12 @@ HTML = r"""
   <button class="btn btn-1w" id="btn1w" onclick="refreshTF('1w')">↻ Refresh 1W</button>
   <button class="btn btn-fund" id="btnFundAll" onclick="refreshAllFundamentals()">↻ Refresh Fundamentals (All)</button>
   <button class="btn btn-news" id="btnNewsAll" onclick="refreshAllNews()">↻ Refresh News (All)</button>
+  <button class="btn btn-load" id="btnFixBlank" onclick="renderBlankCharts()">🧩 Render Blank Charts</button>
   <span id="statusBadge">—</span>
 </div>
 
 <div id="sizeBar">
-  <div class="tf-size-group">
+  <!--<div class="tf-size-group">
     <span class="tf-size-label">5m</span>
     <div class="size-ctrl"><label>Canvas Width</label>
       <button class="step-btn" onclick="stepSize('5m','width',-40)">−</button>
@@ -2484,7 +2600,7 @@ HTML = r"""
       <span class="size-val" id="val-5m-h">320px</span>
       <button class="step-btn" onclick="stepSize('5m','h',30)">+</button></div>
     <button class="btn-sm" onclick="applyAll('5m')">Apply to all 5m</button>
-  </div>
+  </div>-->
   <div class="tf-size-group">
     <span class="tf-size-label" style="color:#34d399">1D</span>
     <div class="size-ctrl"><label>Canvas Width</label>
@@ -2514,7 +2630,7 @@ HTML = r"""
 
 <div id="colHeader">
   <div class="ch-info">Stock</div>
-  <div class="ch-tf" style="width:520px">5 Min · 3 Days</div>
+  <!-- <div class="ch-tf" style="width:520px">5 Min · 3 Days</div> -->
   <div class="ch-tf" style="width:520px">1 Day · 1 Year</div>
   <div class="ch-tf" style="width:520px">Weekly Line · 3 Years</div>
   <div class="ch-tf" style="width:520px">1 Week · 3 Years</div>
@@ -2534,6 +2650,23 @@ const fundMap      = {};
 const acceptedMap  = {};   // { name: { latest_accepted, recent: [{condition_met, accepted}, ...] } }
 const emaDistMap   = {};   // { name: { latest_ema_distance, recent: [{condition_met, ema_distance}, ...] } }
 const neverBelow10emaMap = {};   // { name: { latest_value: "Yes"/"No"/"", recent: [{condition_met, value}, ...] } }
+const patternMap = {};   // { name: { latest_value: "Uptrend", recent: [...] } }
+const tradeMap = {};   // { name: { latest_value: "TG Hit"/"SL Hit"/"", recent: [...] } }
+let tradeFilter = 'all';
+let moveFilter  = 'all';
+const updownMap = {};   // { name: { latest_value: "UP in 15 days", recent: [...] } }
+
+function classifyMove(v) {
+  const s = (v || '').toLowerCase().trim();
+  if (!s) return '';
+  if (s.startsWith('up')) return 'up';
+  if (s.startsWith('down')) {
+    if (s.includes('not recovered')) return 'down_not_recovered';
+    if (s.includes('recover'))       return 'down_recovered';
+    return 'down_other';
+  }
+  return '';
+}
 const chartReg   = {}; // `${name}_${tf}` -> {chart, candleSeries, volSeries, extraSeries:[]}
 
 // sizeState now controls the actual chart CANVAS dimensions (width/height).
@@ -2770,19 +2903,118 @@ async function fetchNeverBelow10Ema() {
     }
   } catch(e) {}
 }
+async function fetchPatternLabels() {
+  try {
+    const r = await fetch('/api/pattern_label_summary');
+    const d = await r.json();
+    for (const [name, data] of Object.entries(d)) {
+      patternMap[name] = data;
+      renderPatternLabel(name, data);
+    }
+  } catch(e) {}
+}
+async function fetchTradeStatus() {
+  try {
+    const r = await fetch('/api/trade_status_summary');
+    const d = await r.json();
+    for (const [name, data] of Object.entries(d)) {
+      tradeMap[name] = data;
+    }
+    applyTradeFilter();
+  } catch(e) {}
+}
+
+async function fetchUpDownMove() {
+  try {
+    const r = await fetch('/api/updown_move_summary');
+    const d = await r.json();
+    for (const [name, data] of Object.entries(d)) {
+      updownMap[name] = data;
+    }
+    applyTradeFilter();
+  } catch(e) {}
+}
+
+function applyTradeFilter() {
+  let shown = 0;
+  STOCKS.forEach(name => {
+    const row = document.getElementById(`row-${name}`);
+    if (!row) return;
+    const t = (tradeMap[name] && tradeMap[name].latest_value) || '';
+    const m = classifyMove(updownMap[name] && updownMap[name].latest_value);
+
+    const tradeOk = (tradeFilter === 'all') || (t === tradeFilter);
+    let moveOk = true;
+    if (moveFilter === 'up')                    moveOk = (m === 'up');
+    else if (moveFilter === 'down')             moveOk = m.startsWith('down');
+    else if (moveFilter === 'down_not_recovered') moveOk = (m === 'down_not_recovered');
+    else if (moveFilter === 'down_recovered')   moveOk = (m === 'down_recovered');
+
+    const visible = tradeOk && moveOk;
+    row.style.display = visible ? '' : 'none';
+    if (visible) shown++;
+  });
+  if (tradeFilter === 'all' && moveFilter === 'all') setStatus(`Showing all ${STOCKS.length} stocks`);
+  else setStatus(`Filter: ${tradeFilter} / ${moveFilter} → ${shown} stocks`);
+}
+
+document.getElementById('tradeFilter').addEventListener('change', function() {
+  tradeFilter = this.value;
+  applyTradeFilter();
+});
+document.getElementById('moveFilter').addEventListener('change', function() {
+  moveFilter = this.value;
+  applyTradeFilter();
+});
+function renderPatternLabel(name, data) {
+  const el = document.getElementById(`pattern-${name}`);
+  if (!el) return;
+  const v = data && data.latest_value;
+  if (v) { el.textContent = v; el.style.display = 'block'; }
+  else   { el.textContent = '';  el.style.display = 'none'; }
+}
 
 function renderAcceptedDates(name, data) {
   const el = document.getElementById(`accdates-${name}`);
   if (!el) return;
   const recent = data.recent || [];
   if (!recent.length) { el.innerHTML = ''; return; }
+
+  function tradeBadge(t) {
+    if (!t) return '';
+    let color = '#9ca3af', bg = '#1a1a1a', border = '#2a2a2a';
+    if (t === 'TG Hit')      { color = '#4ade80'; bg = '#0f3320'; border = '#166534'; }
+    else if (t === 'SL Hit') { color = '#f87171'; bg = '#3a1414'; border = '#7f1d1d'; }
+    return `<span style="font-size:9px;font-weight:700;padding:0 5px;border-radius:3px;
+      color:${color};background:${bg};border:1px solid ${border};white-space:nowrap">${t}</span>`;
+  }
+  function moveBadge(v) {
+    const c = classifyMove(v);
+    if (!c) return '';
+    let color = '#9ca3af', bg = '#1a1a1a', border = '#2a2a2a';
+    if (c === 'up')                          { color = '#4ade80'; bg = '#0f3320'; border = '#166534'; }
+    else if (c === 'down_not_recovered')     { color = '#f87171'; bg = '#3a1414'; border = '#7f1d1d'; }
+    else if (c === 'down_recovered')         { color = '#fbbf24'; bg = '#332405'; border = '#5c4008'; }
+    else if (c === 'down_other')             { color = '#fb923c'; bg = '#3a1f05'; border = '#7c2d12'; }
+    return `<span style="font-size:9px;font-weight:700;padding:0 5px;border-radius:3px;
+      color:${color};background:${bg};border:1px solid ${border};white-space:nowrap">${v}</span>`;
+  }
   const rows = recent.map(entry => `
-    <div style="display:flex;gap:4px;align-items:baseline;font-size:9px;line-height:1.5">
-      <span style="color:#9ca3af;font-weight:600">CM:</span>
-      <span style="color:#e5e7eb">${entry.condition_met}</span>
-      <span style="color:#9ca3af;font-weight:600">→ Acc:</span>
-      <span style="color:#fbbf24;font-weight:600">${entry.accepted}</span>
+    <div style="margin-bottom:3px">
+      <div style="display:flex;gap:4px;align-items:baseline;font-size:9px;line-height:1.5">
+        <span style="color:#9ca3af;font-weight:600">CM:</span>
+        <span style="color:#e5e7eb">${entry.condition_met}</span>
+        <span style="color:#9ca3af;font-weight:600">→ Acc:</span>
+        <span style="color:#fbbf24;font-weight:600">${entry.accepted}</span>
+      </div>
+      ${(entry.pattern || entry.trade || entry.updown) ? `
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;line-height:1.4">
+        ${entry.pattern ? `<span style="font-size:9px;font-weight:700;color:#fb923c">${entry.pattern}</span>` : ''}
+        ${tradeBadge(entry.trade)}
+        ${moveBadge(entry.updown)}
+      </div>` : ''}
     </div>`).join('');
+
   el.innerHTML = `
     <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.5px;
       text-transform:uppercase;margin-top:4px;margin-bottom:2px">⚡ Recent Accepted Dates</div>
@@ -2904,6 +3136,7 @@ function buildRows() {
     row.innerHTML = `
       <div class="info-strip" id="info-${name}">
         <div class="info-name">${name}</div>
+        <div class="pattern-badge" id="pattern-${name}"></div>
         <div class="info-ltp" id="ltp-${name}">—</div>
         <div class="info-chg" id="chg-${name}">—</div>
         <div class="info-vol" id="vol-${name}"></div>
@@ -2921,6 +3154,7 @@ function buildRows() {
       </div>`;
     TF_LIST.forEach(tf => {
       const cell = document.createElement('div');
+      if (tf === '5m') return;
       cell.className = 'chart-cell';
       cell.id = `cell-${name}-${tf}`;
       const tfLabel = tf==='5m' ? '5 Min' : tf==='1d' ? '1 Day' : '1 Week';
@@ -2967,7 +3201,18 @@ function disposeChart(key) {
   }
   delete chartReg[key];
 }
-
+// Sort by time, drop null/NaN rows and duplicate times so lightweight-charts never throws
+function cleanSeriesData(arr) {
+  const ok = arr.filter(p => p && p.time != null &&
+    Object.values(p).every(v => v !== null && !Number.isNaN(v)));
+  ok.sort((a, b) => (a.time > b.time ? 1 : a.time < b.time ? -1 : 0));
+  const out = [];
+  for (const p of ok) {
+    if (out.length && out[out.length - 1].time === p.time) out[out.length - 1] = p;
+    else out.push(p);
+  }
+  return out;
+}
 function renderChart(name, tf, data) {
   const key  = `${name}_${tf}`;
   const container = document.getElementById(`chartdiv-${name}-${tf}`);
@@ -3016,7 +3261,7 @@ function renderChart(name, tf, data) {
   const times   = data.times   || [];
   const candles = data.candles || [];
   const ohlc = candles.map((c, i) => ({ time: times[i], open: c.o, high: c.h, low: c.l, close: c.c }));
-  candleSeries.setData(ohlc);
+  candleSeries.setData(cleanSeriesData(ohlc));
 
   // Volume histogram, squeezed into the bottom of the same pane
   const volSeries = chart.addHistogramSeries({
@@ -3031,7 +3276,7 @@ function renderChart(name, tf, data) {
     value: v.y,
     color: spikeFlag[i] ? 'rgba(217,119,6,0.75)' : (v.up ? 'rgba(22,163,74,0.45)' : 'rgba(220,38,38,0.45)')
   }));
-  volSeries.setData(volData);
+  volSeries.setData(cleanSeriesData(volData));
 
   // EMA20 / EMA10 — brightened for visibility against the black chart background
   const ema20Series = chart.addLineSeries({ color:'#fbbf24', lineWidth:1, priceLineVisible:false, lastValueVisible:false });
@@ -3039,7 +3284,7 @@ function renderChart(name, tf, data) {
   const ema20 = (data.ema20 || []).map((v,i)=>({time:times[i], value:v})).filter(p=>p.value!=null);
   const ema10 = (data.ema10 || []).map((v,i)=>({time:times[i], value:v})).filter(p=>p.value!=null);
   ema20Series.setData(ema20);
-  ema10Series.setData(ema10);
+  ema10Series.setData(cleanSeriesData(ema10));
 
   // Supertrend: split into contiguous same-color segments (own series each,
   // so segments never draw a connecting line across a color flip)
@@ -3163,7 +3408,7 @@ function renderLineChart(name, weeklyData) {
   const times   = weeklyData.times   || [];
   const candles = weeklyData.candles || [];
   const lineData = candles.map((c, i) => ({ time: times[i], value: c.c })).filter(p => p.value != null);
-  lineSeries.setData(lineData);
+  lineSeries.setData(cleanSeriesData(lineData));
   chart.timeScale().fitContent();
 
   weeklyTimesMap[name] = times;
@@ -3445,7 +3690,7 @@ async function fetchAndRenderChart(name, tf) {
       const badge = document.getElementById(`cbadge-${name}`);
       if (badge) { badge.textContent = '⚡ ' + condDates[name]; badge.style.display = 'block'; }
     }
-  } catch(e) {}
+  } catch(e) { console.error('Render failed:', name, tf, e); }
 }
 
 async function startLivePolling() {
@@ -3517,47 +3762,58 @@ document.getElementById('sortSelect').addEventListener('change', function() {
 let sortMode = 'default';
 
 const FUND_SIGNAL_RANK = { 'Strong': 0, 'Moderate': 1, 'Weak': 2, 'Avoid': 3 };
-
 function applySortOrder() {
   const table = document.getElementById('stockTable');
   const rows  = Array.from(table.querySelectorAll('.stock-row'));
   rows.sort((a, b) => {
     const na=a.id.replace('row-',''), nb=b.id.replace('row-','');
     const qa=quotesMap[na]||{}, qb=quotesMap[nb]||{};
+
+    // ── Pattern label sort: selected pattern goes to the top, rest A → Z ──
+    if (sortMode.startsWith('pattern:')) {
+      const want = sortMode.slice('pattern:'.length);
+      const pa = (patternMap[na] && patternMap[na].latest_value) || '';
+      const pb = (patternMap[nb] && patternMap[nb].latest_value) || '';
+      const ma = pa === want, mb = pb === want;
+      if (ma && !mb) return -1;
+      if (!ma && mb) return  1;
+      return na.localeCompare(nb);
+    }
+
     switch (sortMode) {
       case 'price_asc':   return (qa.ltp    ||0)-(qb.ltp    ||0);
       case 'price_desc':  return (qb.ltp    ||0)-(qa.ltp    ||0);
       case 'change_asc':  return (qa.pchange||0)-(qb.pchange||0);
       case 'change_desc': return (qb.pchange||0)-(qa.pchange||0);
       case 'cond_date':   return (condDates[nb]||'').localeCompare(condDates[na]||'');
-           case 'accept_date': {
-                 const aa = (acceptedMap[na] && acceptedMap[na].latest_accepted) || '';
-                 const ab = (acceptedMap[nb] && acceptedMap[nb].latest_accepted) || '';
-                 return ab.localeCompare(aa);
-            }
-           case 'ema_dist_asc': {
-                 // "Near → Far": rank by ABSOLUTE distance from the EMA (0% = right on
-                 // the EMA, further from 0 in either direction = farther away).
-                 // Stocks with no EMA distance data sink to the bottom.
-                 const va = emaDistMap[na] && emaDistMap[na].latest_ema_distance;
-                 const vb = emaDistMap[nb] && emaDistMap[nb].latest_ema_distance;
-                 const hasA = va != null, hasB = vb != null;
-                 if (hasA && !hasB) return -1;
-                 if (!hasA && hasB) return  1;
-                 if (!hasA && !hasB) return na.localeCompare(nb);
-                 return Math.abs(va) - Math.abs(vb);
-            }
-           case 'never_below_10ema': {
-                 // "Yes → No": stocks whose close never dipped below the 10 EMA
-                 // (CloseNeverBelow10EMA == "Yes") sort first, then "No", then
-                 // anything with no data at all sinks to the bottom.
-                 const va = neverBelow10emaMap[na] && neverBelow10emaMap[na].latest_value;
-                 const vb = neverBelow10emaMap[nb] && neverBelow10emaMap[nb].latest_value;
-                 const rank = v => v === 'Yes' ? 0 : v === 'No' ? 1 : 2;
-                 const ra = rank(va), rb = rank(vb);
-                 if (ra !== rb) return ra - rb;
-                 return na.localeCompare(nb);
-            }
+      case 'accept_date': {
+        const aa = (acceptedMap[na] && acceptedMap[na].latest_accepted) || '';
+        const ab = (acceptedMap[nb] && acceptedMap[nb].latest_accepted) || '';
+        return ab.localeCompare(aa);
+      }
+      case 'ema_dist_asc': {
+        // "Near → Far": rank by ABSOLUTE distance from the EMA (0% = right on
+        // the EMA, further from 0 in either direction = farther away).
+        // Stocks with no EMA distance data sink to the bottom.
+        const va = emaDistMap[na] && emaDistMap[na].latest_ema_distance;
+        const vb = emaDistMap[nb] && emaDistMap[nb].latest_ema_distance;
+        const hasA = va != null, hasB = vb != null;
+        if (hasA && !hasB) return -1;
+        if (!hasA && hasB) return  1;
+        if (!hasA && !hasB) return na.localeCompare(nb);
+        return Math.abs(va) - Math.abs(vb);
+      }
+      case 'never_below_10ema': {
+        // "Yes → No": stocks whose close never dipped below the 10 EMA
+        // (CloseNeverBelow10EMA == "Yes") sort first, then "No", then
+        // anything with no data at all sinks to the bottom.
+        const va = neverBelow10emaMap[na] && neverBelow10emaMap[na].latest_value;
+        const vb = neverBelow10emaMap[nb] && neverBelow10emaMap[nb].latest_value;
+        const rank = v => v === 'Yes' ? 0 : v === 'No' ? 1 : 2;
+        const ra = rank(va), rb = rank(vb);
+        if (ra !== rb) return ra - rb;
+        return na.localeCompare(nb);
+      }
       case 'above_st_1d':
       case 'above_st_1w': {
         const stTf = sortMode === 'above_st_1d' ? '1d' : '1w';
@@ -3697,7 +3953,65 @@ async function pollChartRefreshStatus(tf, btn) {
     chartAllPolling[tf] = false;
   }
 }
+// A chart counts as "blank" if it was never successfully registered in chartReg
+// (renderChart only registers at the very END, so a crash mid-render = blank)
+function findBlankCharts() {
+  const blanks = [];
+  for (const name of STOCKS) {
+    for (const tf of ['1d', '1w']) {
+      const missingMain  = !chartReg[`${name}_${tf}`];
+      const missingWline = (tf === '1w') && !chartReg[`${name}_wline`];
+      if (missingMain || missingWline) blanks.push({ name, tf });
+    }
+  }
+  return blanks;
+}
 
+async function renderBlankCharts() {
+  const btn = document.getElementById('btnFixBlank');
+  btn.classList.add('loading');
+  try {
+    let blanks = findBlankCharts();
+    if (!blanks.length) { setStatus('No blank charts found ✓'); return; }
+    const total = blanks.length;
+
+    // PASS 1: re-render from the server cache (fast, no network)
+    let i = 0;
+    for (const { name, tf } of blanks) {
+      i++;
+      setStatus(`Pass 1 (cache): ${i}/${total} — ${name} ${tf}`);
+      await fetchAndRenderChart(name, tf);
+      await sleep(0);
+    }
+
+    // PASS 2: only the ones STILL blank → live fetch for just those
+    blanks = findBlankCharts();
+    let j = 0;
+    for (const { name, tf } of blanks) {
+      j++;
+      setStatus(`Pass 2 (live fetch): ${j}/${blanks.length} — ${name} ${tf}`);
+      try {
+        const r = await fetch('/api/refresh_single_tf', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ symbol: name, tf })
+        });
+        const d = await r.json();
+        if (d.success) {
+          await fetchAndRenderChart(name, tf);
+          renderedSet.add(`${name}_${tf}`);
+          if (typeof d.ts === 'number' && d.ts > pollSince) pollSince = d.ts;
+        }
+      } catch (e) { console.error('Blank refresh failed:', name, tf, e); }
+    }
+
+    const left = findBlankCharts();
+    setStatus(left.length
+      ? `Done — ${left.length} still blank: ${left.map(b => b.name + ' ' + b.tf).join(', ')}`
+      : `All ${total} blank charts rendered ✓`);
+  } finally {
+    btn.classList.remove('loading');
+  }
+}
 function setStatus(msg) { document.getElementById('statusBadge').textContent = msg; }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -3717,6 +4031,9 @@ window.addEventListener('DOMContentLoaded', () => {
   fetchAcceptedDates();
   fetchEmaDistances();
   fetchNeverBelow10Ema();
+  fetchPatternLabels();
+  fetchTradeStatus();  
+  fetchUpDownMove();
 });</script>
 </body>
 </html>
