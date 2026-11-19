@@ -1585,6 +1585,7 @@ def build_chart_data(name, tf, force_fetch=False):
 
     df['EMA20'] = df['Close'].ewm(span=20, adjust=False).mean()
     df['EMA10'] = df['Low'].ewm(span=10, adjust=False).mean()
+    df['EMA200'] = df['Close'].ewm(span=200, adjust=False).mean()
     df = calc_supertrend(df)
     if tf == "5m":
         pivots = calc_pivots_5m(df)
@@ -1594,7 +1595,7 @@ def build_chart_data(name, tf, force_fetch=False):
         pivots = calc_pivots_1w(name)
     df = df.reset_index(drop=True)
 
-    candles, ema20, ema10, st_green, st_red, volume, xlabels, times = [], [], [], [], [], [], [], []
+    candles, ema20, ema10, ema200, st_green, st_red, volume, xlabels, times = [], [], [], [], [], [], [], [], []
     last_st_dir = int(df['ST_dir'].iloc[-1]) if not df.empty else 0
 
     if tf == "5m":
@@ -1619,6 +1620,7 @@ def build_chart_data(name, tf, force_fetch=False):
         volume.append({"y": int(row['Volume']), "up": row['Close'] >= row['Open']})
         ema20.append(round(row['EMA20'],2) if not np.isnan(row['EMA20']) else None)
         ema10.append(round(row['EMA10'],2) if not np.isnan(row['EMA10']) else None)
+        ema200.append(round(row['EMA200'],2) if not np.isnan(row['EMA200']) else None)
         st_val = row['ST'] if not np.isnan(row['ST']) else None
         if row['ST_dir'] == 1:
             st_green.append(round(st_val,2) if st_val else None); st_red.append(None)
@@ -1664,7 +1666,7 @@ def build_chart_data(name, tf, force_fetch=False):
                 end_date_pchange = round(((end_date_ltp - end_date_open) / end_date_open) * 100, 2)
 
     result = {
-        "candles": candles, "times": times, "ema20": ema20, "ema10": ema10,
+        "candles": candles, "times": times, "ema20": ema20, "ema10": ema10, "ema200": ema200,
         "st_green": st_green, "st_red": st_red,
         "volume": volume, "labels": xlabels,
         "pivots": pivots, "symbol": name,
@@ -3285,6 +3287,10 @@ function renderChart(name, tf, data) {
   const ema10 = (data.ema10 || []).map((v,i)=>({time:times[i], value:v})).filter(p=>p.value!=null);
   ema20Series.setData(ema20);
   ema10Series.setData(cleanSeriesData(ema10));
+  // EMA200 (Close) — thick white line
+  const ema200Series = chart.addLineSeries({ color:'#ffffff', lineWidth:2, priceLineVisible:false, lastValueVisible:false });
+  const ema200 = (data.ema200 || []).map((v,i)=>({time:times[i], value:v})).filter(p=>p.value!=null);
+  ema200Series.setData(cleanSeriesData(ema200));
 
   // Supertrend: split into contiguous same-color segments (own series each,
   // so segments never draw a connecting line across a color flip)
@@ -3353,7 +3359,7 @@ function renderChart(name, tf, data) {
   // and you can further zoom/pan manually with scroll/pinch/drag at any time.
   chart.timeScale().fitContent();
 
-  chartReg[key] = { chart, candleSeries, volSeries, ema20Series, ema10Series, stSeriesList, priceLines };
+    chartReg[key] = { chart, candleSeries, volSeries, ema20Series, ema10Series, ema200Series, stSeriesList, priceLines };
 
   // The Weekly Line chart is sourced from the exact same "1w" chart_data —
   // no separate fetch/refresh needed. Render/refresh it right alongside the

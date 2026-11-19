@@ -422,6 +422,9 @@ def build_chart_data(name, tf, end_date, fresh=False):
     # indicators on the FULL history up to the end date (so values are identical when you step forward)
     df['EMA20'] = df['Close'].ewm(span=20, adjust=False).mean()
     df['EMA10'] = df['Low'].ewm(span=10, adjust=False).mean()
+    # 200 EMA on CLOSE (same definition as the scanner). min_periods=200 -> the line only starts once
+    # there are 200 candles of history (200 days on the 1D chart, 200 weeks on the 1W chart).
+    df['EMA200'] = df['Close'].ewm(span=200, adjust=False, min_periods=200).mean()
     df = calc_supertrend(df)
     pivots = calc_pivots_1d(df) if tf == "1d" else calc_pivots_1w(upto, end_date)
 
@@ -440,14 +443,16 @@ def build_chart_data(name, tf, end_date, fresh=False):
 
     times = [d.strftime("%Y-%m-%d") for d in df['Datetime']]
     O, H, L, C, V = (df[c].values for c in ['Open', 'High', 'Low', 'Close', 'Volume'])
-    E20, E10, ST, SD = df['EMA20'].values, df['EMA10'].values, df['ST'].values, df['ST_dir'].values
-    candles, volume, ema20, ema10, st_green, st_red = [], [], [], [], [], []
+    E20, E10, E200 = df['EMA20'].values, df['EMA10'].values, df['EMA200'].values
+    ST, SD = df['ST'].values, df['ST_dir'].values
+    candles, volume, ema20, ema10, ema200, st_green, st_red = [], [], [], [], [], [], []
     for i in range(len(df)):
         candles.append({"o": round(float(O[i]), 2), "h": round(float(H[i]), 2),
                         "l": round(float(L[i]), 2), "c": round(float(C[i]), 2)})
         volume.append({"y": int(V[i]), "up": bool(C[i] >= O[i])})
         ema20.append(None if np.isnan(E20[i]) else round(float(E20[i]), 2))
         ema10.append(None if np.isnan(E10[i]) else round(float(E10[i]), 2))
+        ema200.append(None if np.isnan(E200[i]) else round(float(E200[i]), 2))
         sv = None if np.isnan(ST[i]) else round(float(ST[i]), 2)
         if SD[i] == 1:
             st_green.append(sv); st_red.append(None)
@@ -464,7 +469,7 @@ def build_chart_data(name, tf, end_date, fresh=False):
 
     return {
         "symbol": name, "tf": tf, "end_date": end_str,
-        "candles": candles, "times": times, "ema20": ema20, "ema10": ema10,
+        "candles": candles, "times": times, "ema20": ema20, "ema10": ema10, "ema200": ema200,
         "st_green": st_green, "st_red": st_red, "volume": volume,
         "pivots": pivots, "last_st_dir": int(SD[-1]) if len(SD) else 0,
         "condition_met_flag_1d": cond_flags, "condition_met_dates": cond_dates,
@@ -783,6 +788,8 @@ const $ = id => document.getElementById(id);
 const sizeState = { '1d': { width:520, h:340 }, '1w': { width:520, h:340 } };   // Weekly Line shares the 1W size
 const wlineSize = () => sizeState['1w'];
 
+const EMA200_COLOR = '#f97316';   // orange 200 EMA line (EMA20 = yellow, EMA10 = lavender)
+
 const rows = {};          // id -> { id, symbol, token, loadedSym, nav }
 const chartReg = {};      // `${id}_${tf}` -> { chart, n, ... }
 const drawState = {};     // id -> { active, pending, lines:[{a,b,series}] }   (anchors are TIME based: {t, frac, price})
@@ -819,7 +826,8 @@ function buildSizeBar() {
         <span class="size-val" id="val-${tf}-h">${sizeState[tf].h}px</span>
         <button class="step-btn" onclick="stepSize('${tf}','h',30)">+</button></div>
     </div>`).join('') +
-    `<span style="font-size:10px;color:var(--muted)">Size changes apply to every row. Scroll / pinch / drag on a chart to zoom & pan.</span>`;
+    `<span style="font-size:10px;color:var(--muted)">Size changes apply to every row. Scroll / pinch / drag on a chart to zoom & pan. ` +
+    `<span style="color:${EMA200_COLOR};font-weight:700">━ 200 EMA</span></span>`;
 }
 function updateHeader() {
   $('hd-1d').style.width = (sizeState['1d'].width + 15) + 'px';
@@ -879,7 +887,21 @@ function addStock(sym) {
   updateEmpty();
   setStatus(`${selected.length} stock(s) selected — now pick the end date`);
 }
-
+// paste / type MANY stocks at once: "NSE:AEGISVOPAK-EQ,\nNSE:AEQUS-EQ," or "AEGISVOPAK, AEQUS" etc.
+// Splits on commas / spaces / new lines / semicolons, cleans each one (NSE: and -EQ removed), skips duplicates,
+// selects them all, and (if the end date is already set) builds all the rows in ONE go.
+function addMany(text) {
+  const syms = [...new Set(String(text).split(/[\s,;]+/).map(cleanSym).filter(Boolean))];
+  let added = 0;
+  for (const s of syms) {
+    if (!selected.includes(s)) { selected.push(s); added++; }
+  }
+  renderChips();
+  if (!added) { setStatus('Nothing new to add'); return; }
+  if (globalEnd) { commitSelected(); return; }     // date already picked → rows for ALL of them
+  updateEmpty();
+  setStatus(`${selected.length} stock(s) selected — now pick the end date`);
+}
 // remove a PENDING chip (not yet turned into a row)
 function removeStock(sym) {
   selected = selected.filter(s => s !== sym);
@@ -1228,12 +1250,17 @@ cInp.addEventListener('keydown', e => {
   } else if (e.key === 'Backspace' && !cInp.value && selected.length) {
     removeStock(selected[selected.length - 1]);
     if (open) fetchSuggest(true);
-  } else if (e.key === 'Enter') {
+    } else if (e.key === 'Enter') {
     e.preventDefault();
-    const typed = cleanSym(cInp.value);
-    if (open && sug.items[sug.idx]) pickSuggest(sug.idx);
-    else if (typed) { addStock(typed); cInp.value = ''; fetchSuggest(true, typed); }
-    else hideSuggest();
+    const raw = cInp.value;
+    if (/[,;\s]/.test(raw.trim())) {                 // several symbols in the box → add them all
+      addMany(raw); cInp.value = ''; fetchSuggest(true);
+    } else {
+      const typed = cleanSym(raw);
+      if (open && sug.items[sug.idx]) pickSuggest(sug.idx);
+      else if (typed) { addStock(typed); cInp.value = ''; fetchSuggest(true, typed); }
+      else hideSuggest();
+    }
   }
 });
 window.addEventListener('scroll', e => { if (e.target && e.target.id === 'suggest') return; renderSuggest(); }, true);
@@ -1300,6 +1327,10 @@ function renderChart(id, tf, data, keep) {
   const ema10S = chart.addLineSeries({ color: '#a5b4fc', lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
   ema20S.setData((data.ema20 || []).map((v, i) => ({ time: times[i], value: v })).filter(p => p.value != null));
   ema10S.setData((data.ema10 || []).map((v, i) => ({ time: times[i], value: v })).filter(p => p.value != null));
+
+  // 200 EMA (on Close) — orange line; only drawn where 200 candles of history exist
+  const ema200S = chart.addLineSeries({ color: EMA200_COLOR, lineWidth: 2, priceLineVisible: false, lastValueVisible: false, title: '' });
+  ema200S.setData((data.ema200 || []).map((v, i) => ({ time: times[i], value: v })).filter(p => p.value != null));
 
   const stSeries = [];
   function addSegments(arr, color) {
@@ -1385,6 +1416,11 @@ function renderLineChart(id, weeklyData, keep) {
   const lineSeries = chart.addLineSeries({ color: '#60a5fa', lineWidth: 2, priceLineVisible: true, lastValueVisible: true });
   const times = weeklyData.times || [], candles = weeklyData.candles || [];
   lineSeries.setData(candles.map((c, i) => ({ time: times[i], value: c.c })).filter(p => p.value != null));
+
+  // 200 EMA (weekly closes) on the Weekly Line chart too
+  const wEma200 = chart.addLineSeries({ color: EMA200_COLOR, lineWidth: 2, priceLineVisible: false, lastValueVisible: false });
+  wEma200.setData((weeklyData.ema200 || []).map((v, i) => ({ time: times[i], value: v })).filter(p => p.value != null));
+
   restoreView(chart, view, candles.length);
 
   weeklyTimes[id] = times;
