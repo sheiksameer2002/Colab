@@ -4,6 +4,10 @@
 #    "Render Blank Charts" now regenerates charts that have no saved file / can't be drawn, then renders them
 #v5: 1D regenerate = exactly 1 year before earliest accepted date (or whatever history exists)
 #    1D charts open with a ~1 year window; Next/Prev/Reset keep the current zoom (no jump to full zoom-out)
+#v6: event markers (CM / ACC) + highlighted event follow the cursor date in BOTH directions (Next and Prev):
+#    current event = latest event whose Acc date has been reached by the cursor candle
+#    NEW global buttons: "🔄 Refresh View" (reload saved files, regenerate if missing/broken) and
+#                        "⬇ Re-download View" (force fresh download for every chart in the current view)
 import subprocess
 import sys
 import shutil
@@ -468,7 +472,7 @@ HTML = r"""
     --accent:#3b82f6; --accent2:#10b981;
     --text:#e5e7eb; --muted:#9ca3af; --green:#22c55e; --red:#ef4444; --yellow:#f59e0b;
     --font:'Inter','Segoe UI',system-ui,sans-serif;
-    --info-w:200px; --row-sep:#262626;
+    --info-w:230px; --row-sep:#262626;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   html,body { height:100%; background:var(--bg); color:var(--text); font-family:var(--font); font-size:13px; }
@@ -498,6 +502,8 @@ HTML = r"""
     font-size:12px; font-weight:500; border:1px solid transparent; cursor:pointer;
     transition:all .15s; white-space:nowrap; }
   .btn-load { background:#1c1440; color:#c4b5fd; border-color:#3f2f6b; }
+  .btn-global { background:#062a1f; color:#34d399; border-color:#0f5c43; }
+  .btn-global-hard { background:#2a1606; color:#fb923c; border-color:#7c2d12; }
   .btn:hover { opacity:.8; transform:translateY(-1px); }
   .btn:active { transform:translateY(0); opacity:1; }
   .btn.loading { opacity:.5; pointer-events:none; }
@@ -562,6 +568,21 @@ HTML = r"""
   .stock-link:hover { opacity:.75; transform:translateY(-1px); }
   .link-screener { color:#2dd4bf; background:#0a2a26; border-color:#0f5c50; }
   .link-tv       { color:#60a5fa; background:#0d1f38; border-color:#1e3a5f; }
+
+.ev-wrap { margin-top:5px; border-top:1px solid var(--border); padding-top:4px; }
+.ev-title { font-size:9px; font-weight:700; color:#fbbf24; letter-spacing:.5px; text-transform:uppercase; margin-bottom:3px; }
+.ev-list { position:relative; display:flex; flex-direction:column; gap:3px; overflow-y:auto; padding-right:3px; }
+.ev-list::-webkit-scrollbar { width:5px; }
+.ev-list::-webkit-scrollbar-thumb { background:#3a3a3a; border-radius:3px; }
+.ev-item { flex:0 0 auto; border:1px solid var(--border); border-radius:4px; padding:3px 5px;
+  background:#111; font-size:9px; line-height:1.5; }
+.ev-item .ev-dates { display:flex; gap:8px; flex-wrap:wrap; }
+.ev-item .ev-lbl { color:#9ca3af; font-weight:600; }
+.ev-item .ev-acc { color:#22d3ee; font-weight:700; }
+.ev-item .ev-badges { display:flex; gap:4px; align-items:center; flex-wrap:wrap; margin-top:2px; }
+.ev-item.current { border-color:#f97316; background:#3a1d07; box-shadow:0 0 0 1px #f97316 inset; }
+.ev-item.current .ev-acc, .ev-item.current .ev-lbl { color:#fb923c; }
+
   .fund-header { display:flex; align-items:center; justify-content:space-between;
     margin-top:5px; border-top:1px solid var(--border); padding-top:4px; }
   .fund-header-label { font-size:9px; font-weight:700; color:#22d3ee; letter-spacing:.5px; text-transform:uppercase; }
@@ -657,6 +678,9 @@ HTML = r"""
   <button class="btn btn-load" id="btnLoad1w" onclick="loadAll('1w')">📂 Load 1W</button>
   <button class="btn btn-load" id="btnFixBlank" onclick="renderBlankCharts()" title="Draws blank charts; if a chart still can't be drawn (no saved file etc.) it is regenerated and drawn">🧩 Render Blank Charts</button>
   <button class="btn btn-load" onclick="resetAll()">⟲ Reset All to Accepted</button>
+  <div class="sep"></div>
+  <button class="btn btn-global" id="btnRefreshAll" onclick="refreshVisible(false)" title="Refresh every chart in the current view: reload saved files (regenerates if missing / broken / date out of range). Shift+click = force fresh download">🔄 Refresh View</button>
+  <button class="btn btn-global-hard" id="btnRedownloadAll" onclick="refreshVisible(true)" title="Force a fresh re-download of data for every chart in the current view (old file is kept as .bak)">⬇ Re-download View</button>
   <span id="statusBadge">—</span>
 </div>
 
@@ -685,7 +709,7 @@ HTML = r"""
       <button class="step-btn" onclick="stepSize('1w','h',30)">+</button></div>
     <button class="btn-sm" onclick="applyAll('1w')">Apply to all 1W</button>
   </div>
-  <span style="font-size:10px;color:var(--muted)">Each chart ends at its Accepted Date (cyan marker). Use ◀ Prev / Next ▶ on a chart to step one candle at a time and see what happened after (the label shows +N candles after accepted) — your zoom is kept while stepping. ⟲ jumps back to the accepted date. ↻ reloads that chart from its saved file (and regenerates it if the file is missing / broken / doesn't reach the accepted date); Shift+↻ forces a fresh re-download (1D = 1 year before the accepted date). The Weekly Line chart follows the 1W chart. Charts render automatically as you scroll (50 rows per page). Search accepts several names separated by comma/space.</span>
+  <span style="font-size:10px;color:var(--muted)">Each chart ends at its Accepted Date (cyan marker). Use ◀ Prev / Next ▶ on a chart to step one candle at a time and see what happened after (the label shows +N candles after accepted) — your zoom is kept while stepping. The CM / ACC markers and the orange event in the list follow the candle: they switch to whichever event's Acc date has been reached. ⟲ jumps back to the accepted date. ↻ reloads that chart from its saved file (and regenerates it if the file is missing / broken / doesn't reach the accepted date); Shift+↻ forces a fresh re-download (1D = 1 year before the accepted date). 🔄 Refresh View does ↻ for every chart in the current view; ⬇ Re-download View forces fresh data for all of them. The Weekly Line chart follows the 1W chart. Charts render automatically as you scroll (50 rows per page). Search accepts several names separated by comma/space.</span>
 </div>
 
 <div id="colHeader">
@@ -708,6 +732,63 @@ const TF_LIST = ['1d','1w'];
 const PAGE_SIZE = 50;
 const INITIAL_DAYS_1D = 365;     // 1D charts open showing ~1 year before the accepted candle
 const entryMap = {};
+// all events (rows) of each stock, newest accepted first (ENTRIES is already ordered that way)
+const eventsByName = {};
+ENTRIES.forEach(e => { (eventsByName[e.name] = eventsByName[e.name] || []).push(e); });
+const curEvent = {};       // row id -> event currently shown on the chart
+
+// Which event is "current" at the cursor candle?  (v6 – works in both directions)
+//  - at the row's own accepted candle → always the row's own event
+//  - otherwise → the latest event whose Acc date has been reached by the cursor candle
+//  - if no event's Acc date has been reached yet → fall back to the row's own event
+function eventAtDate(id, dateStr, cur, accI, tf) {
+  const e = entryMap[id];
+  if (!e.acc) return e;
+  if (accI != null && cur === accI) return e;          // at the row's own accepted candle → always its own event
+  // weekly candle is dated at week start, so compare against the end of that week
+  const d = (tf === '1w') ? dateMinusDays(dateStr, -6) : dateStr;
+  let best = null;
+  for (const ev of (eventsByName[e.name] || [])) {
+    if (!ev.acc || ev.acc > d) continue;               // this event's Acc date not reached yet
+    if (!best || ev.acc > best.acc) best = ev;         // latest Acc date reached wins
+  }
+  return best || e;                                    // before every Acc date → fall back to own event
+}
+
+function setActiveEvent(id, evId) {
+  const list = document.getElementById(`evlist-${id}`);
+  if (!list) return;
+  let active = null;
+  list.querySelectorAll('.ev-item').forEach(el => {
+    const on = +el.dataset.evid === evId;
+    el.classList.toggle('current', on);
+    if (on) active = el;
+  });
+  if (active) {   // scroll only the panel list (not the page) so the active event is visible
+    if (active.offsetTop < list.scrollTop || active.offsetTop + active.offsetHeight > list.scrollTop + list.clientHeight)
+      list.scrollTop = Math.max(0, active.offsetTop - 4);
+  }
+}
+
+// show ~5 events, scroll beyond that
+function fitEventList(id) {
+  const list = document.getElementById(`evlist-${id}`);
+  if (!list) return;
+  const items = list.querySelectorAll('.ev-item');
+  if (items.length <= 5) { list.style.maxHeight = ''; return; }
+  const last = items[4];
+  list.style.maxHeight = (last.offsetTop + last.offsetHeight + 2) + 'px';
+}
+
+function eventItemHTML(ev) {
+  return `<div class="ev-item" data-evid="${ev.id}">
+    <div class="ev-dates">
+      <span><span class="ev-lbl">CM:</span> ${ev.cm || '—'}</span>
+      <span><span class="ev-lbl">Acc:</span> <span class="ev-acc">${ev.acc || '—'}</span></span>
+    </div>
+    <div class="ev-badges">${tradeBadge(ev.trade)}${moveBadge(ev.updown)}${emaBadge(ev.vs200)}</div>
+  </div>`;
+}
 ENTRIES.forEach(e => { entryMap[e.id] = e; });
 
 const chartData = {};      // `${name}_${tf}` -> full saved data (shared by duplicate stocks)
@@ -893,10 +974,11 @@ function buildRow(e) {
       <div class="info-chg ${chgCls}" id="chg-${id}">${chgTxt}</div>
       <div class="info-vol" id="vol-${id}">${volTxt}</div>
       ${makeStockLinks(e.name)}
-      <div style="margin-top:4px">
-        ${e.cm ? `<div style="display:flex;gap:4px;font-size:9px;line-height:1.5"><span style="color:#9ca3af;font-weight:600">CM:</span><span>${e.cm}</span></div>` : ''}
-        ${e.acc ? `<div style="display:flex;gap:4px;font-size:9px;line-height:1.5"><span style="color:#9ca3af;font-weight:600">Acc:</span><span style="color:#22d3ee;font-weight:700">${e.acc}</span></div>` : ''}
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:2px">${tradeBadge(e.trade)}${moveBadge(e.updown)}${emaBadge(e.vs200)}</div>
+      <div class="ev-wrap">
+        <div class="ev-title">📅 Events (${(eventsByName[e.name] || []).filter(x => x.cm || x.acc).length})</div>
+        <div class="ev-list" id="evlist-${id}">
+          ${(eventsByName[e.name] || []).filter(x => x.cm || x.acc).map(eventItemHTML).join('') || '<div class="news-loading">No events</div>'}
+        </div>
       </div>
       <div class="fund-header"><span class="fund-header-label">📊 Fundamentals</span></div>
       <div id="fund-unified-${id}" style="margin-top:3px;font-size:9px;line-height:1.5;color:#e5e7eb;">
@@ -964,7 +1046,7 @@ function lastIdxLE(times, s) {          // last index whose date <= s  (binary s
   }
   return r;
 }
-function dateMinusDays(dateStr, days) {   // 'YYYY-MM-DD' minus N days → 'YYYY-MM-DD'
+function dateMinusDays(dateStr, days) {   // 'YYYY-MM-DD' minus N days → 'YYYY-MM-DD'  (negative days = plus)
   const d = new Date(dateStr + 'T00:00:00Z');
   d.setUTCDate(d.getUTCDate() - days);
   return d.toISOString().slice(0, 10);
@@ -1103,6 +1185,73 @@ async function refreshChart(id, tf, ev) {
   }
 }
 
+// ── GLOBAL refresh (v6) ──────────────────────────────────────
+//  Refreshes every chart of the rows currently shown (after search / filter / sort / pagination).
+//  force=false : reload saved files; regenerate only when missing / broken / accepted date not covered
+//                (Shift+click on the button = same as force=true)
+//  force=true  : always download fresh data for every stock+timeframe in the view (old file kept as .bak)
+//  One download per stock+timeframe even if a stock has several rows. Every row of it is then redrawn
+//  at its accepted date.
+let globalRefreshRunning = false;
+async function refreshVisible(force, ev) {
+  if (globalRefreshRunning) { setStatus('A global refresh is already running…'); return; }
+  const list = shownEntries();
+  if (!list.length) { setStatus('Nothing to refresh in the current view'); return; }
+  if (!force && window.event && window.event.shiftKey) force = true;
+
+  globalRefreshRunning = true;
+  const btnA = document.getElementById('btnRefreshAll');
+  const btnB = document.getElementById('btnRedownloadAll');
+  btnA.classList.add('loading'); btnB.classList.add('loading');
+  try {
+    // group rows by stock + timeframe
+    const groups = new Map();
+    for (const e of list) for (const tf of TF_LIST) {
+      const k = e.name + '|' + tf;
+      if (!groups.has(k)) groups.set(k, { name: e.name, tf, ids: [] });
+      groups.get(k).ids.push(e.id);
+    }
+    let g = 0, regenerated = 0, drawn = 0;
+    const failed = [];
+    for (const grp of groups.values()) {
+      g++;
+      const label = `${grp.name} ${grp.tf}`;
+      let d = null;
+      if (!force) {
+        setStatus(`Refresh ${g}/${groups.size}: ${label} — reloading file…`);
+        d = await getData(grp.name, grp.tf, true);
+      }
+      const notCovered = d && !d.error && !grp.ids.every(id => coversAccepted(d, entryMap[id]));
+      if (force || !d || d.error || notCovered) {
+        setStatus(`Refresh ${g}/${groups.size}: ${label} — downloading fresh data…`);
+        d = await regenerateData(grp.name, grp.tf);
+        if (!d.error) regenerated++;
+      }
+      if (d.error) {
+        console.warn('Global refresh failed:', label, d.error);
+        failed.push(label);
+        continue;
+      }
+      for (const id of grp.ids) {
+        try { if (await loadRow(id, grp.tf)) drawn++; } catch(err) { console.error('Redraw failed', label, err); }
+        await sleep(0);
+      }
+      if (force) await sleep(150);       // be gentle with Yahoo between downloads
+    }
+    let msg = `${force ? 'Re-download' : 'Refresh'} done ✓ — ${groups.size - failed.length}/${groups.size} stock·timeframes ok, ${regenerated} downloaded, ${drawn} charts redrawn`;
+    if (failed.length) {
+      msg += ` · failed: ${failed.slice(0, 4).join(', ')}${failed.length > 4 ? ` +${failed.length - 4} more` : ''} (see Python console)`;
+    }
+    setStatus(msg);
+  } catch(err) {
+    console.error(err);
+    setStatus('Global refresh error — ' + err);
+  } finally {
+    btnA.classList.remove('loading'); btnB.classList.remove('loading');
+    globalRefreshRunning = false;
+  }
+}
+
 function stepChart(id, tf, delta) {
   const key = `${id}_${tf}`;
   const e = entryMap[id];
@@ -1142,6 +1291,10 @@ function renderChart(id, tf, keepZoom = false) {
 
   const T = data.times.slice(0, n);
   const C = data.candles.slice(0, n);
+
+  // v6: current event = latest event whose Acc date has been reached by the cursor candle (works for Next AND Prev)
+  const ev = eventAtDate(id, T[cur], cur, accIdx[key], tf);
+  if (tf === '1d' || !chartReg[`${id}_1d`]) curEvent[id] = ev;   // 1D chart drives the current event
 
   const chart = LightweightCharts.createChart(container, {
     width: sizeState[tf].width, height: sizeState[tf].h,
@@ -1207,15 +1360,17 @@ function renderChart(id, tf, keepZoom = false) {
     });
   }
 
-  // Markers: condition-met (amber) + accepted date (cyan) — 1D only
+  // Markers follow the CURRENT event only (CM amber + ACC cyan); old event's markers disappear on redraw
   if (tf === '1d') {
     const markers = [];
-    if (e.cm) {
-      const ci = lastIdxLE(T, e.cm);
-      if (ci >= 0 && T[ci] === e.cm) markers.push({ time: T[ci], position: 'belowBar', color: '#d97706', shape: 'arrowUp', text: 'CM' });
+    if (ev.cm) {
+      const ci = lastIdxLE(T, ev.cm);
+      if (ci >= 0 && T[ci] === ev.cm) markers.push({ time: T[ci], position: 'belowBar', color: '#d97706', shape: 'arrowUp', text: 'CM' });
     }
-    const ai = accIdx[key];
-    if (e.acc && ai != null && ai <= cur) markers.push({ time: T[ai], position: 'aboveBar', color: '#22d3ee', shape: 'arrowDown', text: 'ACC' });
+    if (ev.acc) {
+      const ai2 = lastIdxLE(T, ev.acc);
+      if (ai2 >= 0) markers.push({ time: T[ai2], position: 'aboveBar', color: '#22d3ee', shape: 'arrowDown', text: 'ACC' });
+    }
     if (markers.length) {
       markers.sort((a, b) => (a.time > b.time ? 1 : a.time < b.time ? -1 : 0));
       candleSeries.setMarkers(markers);
@@ -1246,6 +1401,7 @@ function renderChart(id, tf, keepZoom = false) {
   updateSTDir(id, tf);
   updateCurInfo(id, tf, T[cur]);
   updateQuote(id);
+  setActiveEvent(id, curEvent[id].id);
 
   if (tf === '1w') renderLineChart(id, T, C, keepZoom);
 }
@@ -1253,13 +1409,17 @@ function renderChart(id, tf, keepZoom = false) {
 function updateCurInfo(id, tf, dateStr) {
   const el = document.getElementById(`cur-${id}-${tf}`);
   if (!el) return;
+
+  const ev = curEvent[id] || entryMap[id];
   const key = `${id}_${tf}`;
   const off = cursors[key] - (accIdx[key] ?? cursors[key]);
   const unit = tf === '1d' ? 'd' : 'w';
+
   let tag;
-  if (!entryMap[id].acc) tag = '';
+  if (!ev.acc) tag = '';
   else if (off === 0) tag = ' · Acc date';
   else tag = ` · Acc ${off > 0 ? '+' : ''}${off}${unit}`;
+
   el.textContent = `${dateStr}${tag}`;
 }
 
@@ -1607,6 +1767,11 @@ function appendRows(from, to) {
     if (f) renderFundamentals(e.id, f);
   }
   table.appendChild(frag);
+  for (let i = from; i < to; i++) {
+    const id = viewList[i].id;
+    fitEventList(id);
+    setActiveEvent(id, id);
+  }
   rows.forEach(r => rowObserver.observe(r));
 }
 
@@ -1768,7 +1933,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 if __name__ == "__main__":
     print(f"✅ Loaded {len(STOCKS)} stocks")
     load_fundamentals_from_file()
-    print("ℹ️  Charts are read from saved JSON files (1daycharts / weeklycharts). Missing/broken ones can be regenerated from the dashboard (↻ / Render Blank Charts).")
+    print("ℹ️  Charts are read from saved JSON files (1daycharts / weeklycharts). Missing/broken ones can be regenerated from the dashboard (↻ / Render Blank Charts / 🔄 Refresh View).")
 
     time.sleep(1)
 
